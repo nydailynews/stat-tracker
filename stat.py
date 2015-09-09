@@ -132,10 +132,12 @@ def main(args):
     #sheet.set_options(args)
     #stat = Stat(sheet)
     #stat.publish()
-    sheet = Sheet('Stat', '')
-    sheet.set_options(args)
-    stat = Stat(sheet)
-    stat.publish()
+    print args.sheets
+    for sheet in args.sheets[0]:
+        item = Sheet('Sports', sheet)
+        item.set_options(args)
+        stat = Stat(item)
+        stat.publish()
 
 def build_parser(args):
     """ A method to handle argparse.
@@ -143,8 +145,9 @@ def build_parser(args):
     parser = argparse.ArgumentParser(usage='$ python stat.py',
                                      description='''Downloads, filters and 
                                                     re-publishes the Google
-                                                    sheet.''',
+                                                    sheet(s).''',
                                      epilog='')
+    parser.add_argument("sheets", action="append", nargs="*")
     parser.add_argument("-v", "--verbose", dest="verbose", default=False, action="store_true")
     return parser.parse_args()
 
