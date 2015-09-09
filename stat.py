@@ -124,15 +124,6 @@ class Stat:
 def main(args):
     """ 
         """
-    #sheet = Sheet('Stat', 'config')
-    #sheet.set_options(args)
-    #stat = Stat(sheet)
-    #stat.publish()
-    #sheet = Sheet('Stat', 'numeric')
-    #sheet.set_options(args)
-    #stat = Stat(sheet)
-    #stat.publish()
-    print args.sheets
     for sheet in args.sheets[0]:
         item = Sheet('Sports', sheet)
         item.set_options(args)
