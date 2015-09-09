@@ -139,7 +139,7 @@ def main(args):
         Example command:
         $ python spreadsheet.py City=Denver
         """
-    sheet = Sheet('Misery Index', 'responses')
+    sheet = Sheet('Sports', 'broncos-sacks-2015')
     sheet.set_options(args)
     sheet.publish()
 
