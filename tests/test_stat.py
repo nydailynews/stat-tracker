@@ -3,12 +3,12 @@
 from __future__ import unicode_literals
 import pytest
 from spreadsheet import Sheet
-from verdict import Verdict
+from stat import Stat
 
 def test_publish():
     """ Test publish method.
         """
     sheet = Sheet('test-sheet', 'worksheet-name')
-    publish = Verdict(sheet)
+    publish = Stat(sheet)
     publish_value = publish.publish()
     assert publish_value == True
