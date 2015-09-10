@@ -135,11 +135,16 @@
 <svg class="chart" id="sacks-chart"></svg>
 
 <script>
-var sheetname="broncos-sacks-2015";
-var chartid="#sacks-chart";
+var c = {
+    'sheet': 'broncos-sacks-2015',
+    'chart': '#sacks-chart',
+    'x': 'Week',
+    'y': 'Sacks',
+    'ceiling': 6
+}
 
 
-var $chart = $(chartid);
+var $chart = $(c.chart);
 var mobile_threshold = 500;
 var aspect = { width: 12, height: 6 };
 
@@ -161,18 +166,17 @@ var y_axis = d3.svg.axis()
     .orient("left")
     .ticks(6);
 
-var chart = d3.select(chartid)
+var chart = d3.select(c.chart)
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-d3.json('output/' + sheetname + '.json', function(error, data) {
+d3.json('output/' + c.sheet + '.json', function(error, data) {
     if (error) return console.warn(error);
-    x.domain(data.map(function(d) { return +d['Week'] }));
-    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d['Sacks'] < 6 ) ceiling = 6; return ceiling; })]);
-
+    x.domain(data.map(function(d) { return +d[c.x] }));
+    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
 
     chart.append("g")
         .attr("class", "x axis")
@@ -182,7 +186,7 @@ d3.json('output/' + sheetname + '.json', function(error, data) {
         .attr("x", 10)
         .attr("dy", "2.5em")
         .style("text-anchor", "start")
-        .text("Week");
+        .text(c.x);
 
     chart.append("g")
         .attr("class", "y axis")
@@ -192,16 +196,16 @@ d3.json('output/' + sheetname + '.json', function(error, data) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Sacks");
+        .text(c.y);
 
     chart.selectAll("bar")
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function(d) { console.log(+d['Week']); return x(+d['Week']);; })
+        .attr("x", function(d) { console.log(+d[c.x]); return x(+d[c.x]);; })
         .attr("width", x.rangeBand())
-        .attr("y", function(d) { return y(+d['Sacks']); })
-        .attr("height", function(d) { console.log(+d['Sacks']); return height - y(+d['Sacks']); });
+        .attr("y", function(d) { return y(+d[c.y]); })
+        .attr("height", function(d) { console.log(+d[c.y]); return height - y(+d[c.y]); });
 });
 </script>
 
