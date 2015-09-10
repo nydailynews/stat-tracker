@@ -175,13 +175,14 @@ var margin = { top: 20, right: 20, bottom: 30, left: 30 },
     width = $chart.width() - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal()
+var x0 = d3.scale.ordinal()
     .rangeRoundBands([5, width], .1);
+var x1 = d3.scale.ordinal();
 var y = d3.scale.linear()
     .range([height, 0]);
 
 var x_axis = d3.svg.axis()
-    .scale(x)
+    .scale(x0)
     .orient("bottom");
 
 var y_axis = d3.svg.axis()
@@ -195,7 +196,9 @@ var chart = d3.select(c.chart)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
 var career_total = 69691;
+var favre_total = 71838;
 
 d3.json('output/' + c.sheet + '.json', function(error, data) {
     if (error) return console.warn(error);
@@ -205,8 +208,10 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         career_total += +d[c.y];
         d.Career = career_total;
     });
+    var key_names = d3.keys(data[0]).filter( function(key) { return key !== "Week"; });
 
-    x.domain(data.map(function(d) { return +d[c.x] }));
+    x0.domain(data.map(function(d) { return +d[c.x] }));
+    x1.domain(key_names).rangeRoundBands([0,x0.rangeBand()]);
     y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
 
     chart.append("g")
@@ -241,9 +246,22 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .text('Career ' + c.y);
 
     // Game Yards
-    chart.selectAll("bar")
+    var yardage = chart.selectAll(".yards")
         .data(data)
+        .enter().append("g")
+        .attr("class", "g")
+        .attr("transform", function(d) { return "translate(" + x0(d[c.x]) + ",0)"; });
+
+    yardage.selectAll("rect")
+        .data(function(d) { var item = Array({ 'name': 'Yards', 'value': d[c.y] }, { 'name': 'Career Yards', 'value': d['Career'] }); return item; })
         .enter().append("rect")
+        .attr("width", x1.rangeBand())
+        .attr("x", function(d) { return x1(d.name); })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); });
+        
+/*
+.append("rect")
         .attr("class", "bar")
         .attr("x", function(d) { console.log(+d[c.x]); return x(+d[c.x]); })
         .attr("width", (x.rangeBand()/2) - 1)
@@ -255,7 +273,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("width", (x.rangeBand()/2) - 1)
         .attr("y", function(d) { return y(+d[c.y]); })
         .attr("height", function(d) { return height - y(+d[c.y]); });
-
+*/
     // Career Yards
     //    chart.selectAll("bar")
     //    .data(data)
