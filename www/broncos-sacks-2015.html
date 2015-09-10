@@ -200,8 +200,8 @@ var chart = d3.select("#sacks-chart")
 
 d3.json('output/broncos-sacks-2015.json', function(error, data) {
     if (error) return console.warn(error);
-    x.domain(data.map(function(d) { console.log(d); return (data.length-1) - data.indexOf(d); }));
-    y.domain([-1, d3.max(data, function(d) { if ( d < 6 ) d = 6; return d; })]);
+    x.domain(data.map(function(d) { return +d['Week'] }));
+    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d['Sacks'] < 6 ) ceiling = 6; return ceiling; })]);
 
 
     chart.append("g")
@@ -228,10 +228,10 @@ d3.json('output/broncos-sacks-2015.json', function(error, data) {
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function(d) { return x((data.length-1) - data.indexOf(d)); })
+        .attr("x", function(d) { console.log(+d['Week']); return x(+d['Week']);; })
         .attr("width", x.rangeBand())
-        .attr("y", function(d) { return y(d); })
-        .attr("height", function(d) { return height - y(d); });
+        .attr("y", function(d) { return y(+d['Sacks']); })
+        .attr("height", function(d) { console.log(+d['Sacks']); return height - y(+d['Sacks']); });
 });
 </script>
 
