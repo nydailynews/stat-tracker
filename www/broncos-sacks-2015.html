@@ -134,40 +134,9 @@
 var sheetname="broncos-sacks-2015";
 </script>
 <script src="stat-tracker.js"></script>
+<link href="style.css" type="text/css" rel="stylesheet"></link>
 <svg class="chart" id="sacks-chart"></svg>
-<style>
-.chart 
-{ 
-    color: black; 
-    min-width: 220px;
-    width: 100%;
-    max-width: 960px;
-}
-.chart rect {
-  fill: #0b235a;
-}
 
-.chart text {
-  fill: #666;
-  font: 10px sans-serif;
-  text-anchor: middle;
-}
-.axis text {
-  font: 10px sans-serif;
-    color: #666;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.x.axis path {
-  display: none;
-}
-</style>
 <script>
 var $chart = $('#sacks-chart');
 var mobile_threshold = 500;
