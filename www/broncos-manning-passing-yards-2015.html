@@ -142,12 +142,12 @@
 </script><!-- End Google Tag Manager -->
 
 <h1>Peyton Manning Passing Yardage Stat Tracker</h1>
-<p>Tracking how many sacks the Denver Broncos defense logs in the 2015 NFL season.</p>
+<p>Tracking Peyton Manning as he passes his way past Brett Favre on the NFL's list of all-time passing yardage.</p>
 
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
 <style type="text/css">
-g.secondary text {
+g.secondary text, .chart rect.secondary {
     fill: #d9661a;
 }
 .chart rect {
@@ -195,9 +195,17 @@ var chart = d3.select(c.chart)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var career_total = 69691;
 
 d3.json('output/' + c.sheet + '.json', function(error, data) {
     if (error) return console.warn(error);
+
+    // Compile career yards
+    data.forEach(function(d) {
+        career_total += +d[c.y];
+        d.Career = career_total;
+    });
+
     x.domain(data.map(function(d) { return +d[c.x] }));
     y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
 
@@ -232,14 +240,25 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .style("text-anchor", "end")
         .text('Career ' + c.y);
 
+    // Game Yards
     chart.selectAll("bar")
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function(d) { console.log(+d[c.x]); return x(+d[c.x]);; })
-        .attr("width", x.rangeBand())
+        .attr("x", function(d) { console.log(+d[c.x]); return x(+d[c.x]); })
+        .attr("width", (x.rangeBand()/2) - 1)
         .attr("y", function(d) { return y(+d[c.y]); })
-        .attr("height", function(d) { console.log(+d[c.y]); return height - y(+d[c.y]); });
+        .attr("height", function(d) { return height - y(+d[c.y]); })
+        .append("rect")
+        .attr("class", "bar secondary")
+        .attr("x", function(d) { return x(+d[c.x] + 10); })
+        .attr("width", (x.rangeBand()/2) - 1)
+        .attr("y", function(d) { return y(+d[c.y]); })
+        .attr("height", function(d) { return height - y(+d[c.y]); });
+
+    // Career Yards
+    //    chart.selectAll("bar")
+    //    .data(data)
 });
 </script>
 
@@ -264,6 +283,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
     </div>
     <script type="text/javascript">
     if ( iframe !== 1 )
+    {
         //Chartbeat stuff
         _sf_async_config.uid = 2671;
         _sf_async_config.domain = 'denverpost.com';
