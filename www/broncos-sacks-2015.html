@@ -130,15 +130,16 @@
 <h1>Denver Broncos Sacks Stat Tracker</h1>
 <p>Tracking how many sacks the Denver Broncos defense logs in the 2015 NFL season.</p>
 
-<script>
-var sheetname="broncos-sacks-2015";
-</script>
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
 <svg class="chart" id="sacks-chart"></svg>
 
 <script>
-var $chart = $('#sacks-chart');
+var sheetname="broncos-sacks-2015";
+var chartid="#sacks-chart";
+
+
+var $chart = $(chartid);
 var mobile_threshold = 500;
 var aspect = { width: 12, height: 6 };
 
@@ -160,14 +161,14 @@ var y_axis = d3.svg.axis()
     .orient("left")
     .ticks(6);
 
-var chart = d3.select("#sacks-chart")
+var chart = d3.select(chartid)
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-d3.json('output/broncos-sacks-2015.json', function(error, data) {
+d3.json('output/' + sheetname + '.json', function(error, data) {
     if (error) return console.warn(error);
     x.domain(data.map(function(d) { return +d['Week'] }));
     y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d['Sacks'] < 6 ) ceiling = 6; return ceiling; })]);
