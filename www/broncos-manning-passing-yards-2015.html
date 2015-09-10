@@ -163,7 +163,7 @@ var c = {
     'chart': '#pass-chart',
     'x': 'Week',
     'y': 'Yards',
-    'ceiling': 500
+    'ceiling': 2000
 }
 
 
@@ -180,6 +180,8 @@ var x0 = d3.scale.ordinal()
 var x1 = d3.scale.ordinal();
 var y = d3.scale.linear()
     .range([height, 0]);
+var color = d3.scale.ordinal()
+    .range(["#0b235a", "#d9661a"]);
 
 var x_axis = d3.svg.axis()
     .scale(x0)
@@ -198,6 +200,7 @@ var chart = d3.select(c.chart)
 
 
 var career_total = 69691;
+var career_current = career_total;
 var favre_total = 71838;
 
 d3.json('output/' + c.sheet + '.json', function(error, data) {
@@ -205,8 +208,9 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
 
     // Compile career yards
     data.forEach(function(d) {
-        career_total += +d[c.y];
-        d.Career = career_total;
+        career_current += +d[c.y];
+        if ( +d[c.y] !== 0 ) d.Career = career_current - career_total;
+        else d.Career = 0;
     });
     var key_names = d3.keys(data[0]).filter( function(key) { return key !== "Week"; });
 
@@ -258,7 +262,8 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("width", x1.rangeBand())
         .attr("x", function(d) { return x1(d.name); })
         .attr("y", function(d) { return y(d.value); })
-        .attr("height", function(d) { return height - y(d.value); });
+        .attr("height", function(d) { return height - y(d.value); })
+        .style("fill", function(d) { return color(d.name); });
         
 /*
 .append("rect")
