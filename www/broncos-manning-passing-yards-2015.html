@@ -146,6 +146,15 @@
 
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
+<style type="text/css">
+g.secondary text {
+    fill: #d9661a;
+}
+.chart rect {
+  fill: #0b235a;
+}
+</style>
+
 <svg class="chart" id="pass-chart"></svg>
 
 <script>
@@ -154,7 +163,7 @@ var c = {
     'chart': '#pass-chart',
     'x': 'Week',
     'y': 'Yards',
-    'ceiling': 6
+    'ceiling': 500
 }
 
 
@@ -202,6 +211,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .style("text-anchor", "start")
         .text(c.x);
 
+    // Game Yards legend
     chart.append("g")
         .attr("class", "y axis")
         .call(y_axis)
@@ -210,7 +220,17 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text(c.y);
+        .text('Game ' + c.y);
+
+    // Career Yards legend
+    chart.append("g")
+        .attr("class", "y axis secondary")
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 18)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text('Career ' + c.y);
 
     chart.selectAll("bar")
         .data(data)
