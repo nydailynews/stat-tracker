@@ -1,3 +1,4 @@
+/*
 function get_stat_json(sheetname)
 {
     $.ajax({
@@ -51,7 +52,6 @@ var tracker = {
     }
 };
 
-/*
 function tracker_callback(items)
 {
     window.tracker['items'] = items;
