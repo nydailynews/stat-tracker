@@ -256,28 +256,32 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("class", "g")
         .attr("transform", function(d) { return "translate(" + x0(d[c.x]) + ",0)"; });
 
+console.log(key_names, x0.rangeBand(), x1.rangeBand());
     yardage.selectAll("rect")
-        .data(function(d) { var item = Array({ 'name': 'Yards', 'value': d[c.y] }, { 'name': 'Career Yards', 'value': d['Career'] }); return item; })
+        .data(function(d) { var item = Array({ 'name': 'Yards', 'value': d[c.y] }, { 'name': 'Career', 'value': d['Career'] }); return item; })
         .enter().append("rect")
         .attr("width", x1.rangeBand())
         .attr("x", function(d) { return x1(d.name); })
         .attr("y", function(d) { return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
         .style("fill", function(d) { return color(d.name); });
-        
 /*
-.append("rect")
+    chart.selectAll("bar")
+        .data(data)
+        .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function(d) { console.log(+d[c.x]); return x(+d[c.x]); })
-        .attr("width", (x.rangeBand()/2) - 1)
+        .attr("x", function(d) { console.log(+d[c.x]); return x0(+d[c.x]); })
+        .attr("width", (x1.rangeBand()/2) - 1)
         .attr("y", function(d) { return y(+d[c.y]); })
         .attr("height", function(d) { return height - y(+d[c.y]); })
+        .style("fill", function(d) { return '#0000ff'; })
         .append("rect")
         .attr("class", "bar secondary")
-        .attr("x", function(d) { return x(+d[c.x] + 10); })
-        .attr("width", (x.rangeBand()/2) - 1)
+        .attr("x", function(d) { return x0(+d[c.x]) + 10; })
+        .attr("width", (x1.rangeBand()/2) - 1)
         .attr("y", function(d) { return y(+d[c.y]); })
-        .attr("height", function(d) { return height - y(+d[c.y]); });
+        .attr("height", function(d) { return height - y(+d[c.y]); })
+        .style("fill", function(d) { return '#ff0000'; });
 */
     // Career Yards
     //    chart.selectAll("bar")
