@@ -143,6 +143,7 @@
 
 <h1>Peyton Manning Passing Yardage Stat Tracker</h1>
 <p>Tracking Peyton Manning as he passes his way past Brett Favre on the NFL's list of all-time passing yardage.</p>
+<p>Manning's per-game yards are in blue, and his career yards are in orange.</p>
 
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
@@ -203,6 +204,12 @@ var career_total = 69691;
 var career_current = career_total;
 var favre_total = 71838;
 
+var line = d3.svg.line()
+    .x(function(d) { return [1, 2, 3, 4, 5]; })
+    .y(function(d) { return [500,500,500,500,500]; });
+    //.y(function(d) { return favre_total - career_total; });
+
+
 d3.json('output/' + c.sheet + '.json', function(error, data) {
     if (error) return console.warn(error);
 
@@ -228,6 +235,12 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .style("text-anchor", "start")
         .text(c.x);
 
+/*
+    chart.append("path")
+        .attr("class", "line")
+        .attr("d", function(d) { console.log(d); return line(d['Week']); })
+        .style("stroke", function(d) { return '#00FF00'; });
+*/
     // Game Yards legend
     chart.append("g")
         .attr("class", "y axis")
@@ -256,7 +269,6 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("class", "g")
         .attr("transform", function(d) { return "translate(" + x0(d[c.x]) + ",0)"; });
 
-console.log(key_names, x0.rangeBand(), x1.rangeBand());
     yardage.selectAll("rect")
         .data(function(d) { var item = Array({ 'name': 'Yards', 'value': d[c.y] }, { 'name': 'Career', 'value': d['Career'] }); return item; })
         .enter().append("rect")
@@ -286,6 +298,22 @@ console.log(key_names, x0.rangeBand(), x1.rangeBand());
     // Career Yards
     //    chart.selectAll("bar")
     //    .data(data)
+
+    // Favre career yards line
+    var goal = chart.append("g")
+        .style("text-anchor", "start")
+        .text("Favre");
+
+    goal.append("line")
+        //.attr("class", "line")
+        //.attr("transform", "translate(0," + height + ")")
+        .attr("stroke", "red")
+        .attr("stroke-width", 1)
+        .attr("x1", 0)
+        .attr("y1", 50)
+        .attr("x2", 500)
+        .attr("y2", 50)
+
 });
 </script>
 
