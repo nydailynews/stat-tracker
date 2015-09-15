@@ -149,6 +149,7 @@
 <svg class="chart" id="sacks-chart"></svg>
 <p>The NFL team record for sacks in a season: 72, by the Chicago Bears, in 1984.</p>
 <p>The Denver Broncos' team record for sacks in a season is 57.</p>
+<p id="at-this-rate"></p>
 
 
 <script>
@@ -158,7 +159,24 @@ var c = {
     'x': 'Week',
     'y': 'Sacks',
     'ceiling': 6
-}
+};
+var sacks = {
+    'total': 0,
+    'games': 0,
+    'average': 0,
+    'forecast': 0,
+    'update_text': function()
+    {
+        $("#at-this-rate").html('<strong>At this rate, the Broncos defense will tally ' + this.forecast + ' sacks this season.');
+    },
+    'init': function()
+    {
+        this.average = Math.round((this.total/this.games)*10)/10;
+        var games_left = 16 - this.games;
+        this.forecast = this.total + Math.round(this.average*games_left);
+        this.update_text();
+    }
+};
 
 
 var $chart = $(c.chart);
@@ -247,6 +265,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
     </div>
     <script type="text/javascript">
     if ( iframe !== 1 )
+    {
         //Chartbeat stuff
         _sf_async_config.uid = 2671;
         _sf_async_config.domain = 'denverpost.com';
