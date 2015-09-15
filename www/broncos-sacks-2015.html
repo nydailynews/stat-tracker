@@ -210,6 +210,21 @@ var chart = d3.select(c.chart)
 
 d3.json('output/' + c.sheet + '.json', function(error, data) {
     if (error) return console.warn(error);
+
+    // Tally up the sacks
+    data.map(function (d, index) 
+    {
+        if ( d['Sacks'] !== "" )
+        {
+            sacks.total += +d['Sacks'];
+            sacks.games += 1;
+        }
+        if ( sacks.games > 0 )
+        {
+            sacks.init();
+        }
+    });
+
     x.domain(data.map(function(d) { return +d[c.x] }));
     y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
 
@@ -237,10 +252,10 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function(d) { console.log(+d[c.x]); return x(+d[c.x]);; })
+        .attr("x", function(d) { return x(+d[c.x]);; })
         .attr("width", x.rangeBand())
         .attr("y", function(d) { return y(+d[c.y]); })
-        .attr("height", function(d) { console.log(+d[c.y]); return height - y(+d[c.y]); });
+        .attr("height", function(d) { return height - y(+d[c.y]); });
 });
 </script>
 
