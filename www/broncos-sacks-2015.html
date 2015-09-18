@@ -144,12 +144,17 @@
 <h1>Denver Broncos Defensive Sacks Stat Tracker</h1>
 <p id="intro">Tracking how many sacks the Denver Broncos defense logs in the 2015 NFL season.</p>
 
+<h2>Denver Broncos sacks, per game, 2015</h2>
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
 <svg class="chart" id="sacks-chart"></svg>
 <p>The NFL team record for sacks in a season: 72, by the Chicago Bears, in 1984.</p>
 <p>The Denver Broncos' team record for sacks in a season is 57.</p>
 <p id="at-this-rate"></p>
+
+<h2>Denver Broncos sacks, per player, 2015 season</h2>
+<svg class="chart" id="sacks-player-chart"></svg>
+
 
 
 <script>
@@ -257,6 +262,11 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("y", function(d) { return y(+d[c.y]); })
         .attr("height", function(d) { return height - y(+d[c.y]); });
 });
+
+
+
+// PER-PLAYER SACKS
+var sacks_player = {};
 </script>
 
 
