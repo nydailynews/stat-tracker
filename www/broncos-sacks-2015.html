@@ -266,7 +266,49 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
 
 
 // PER-PLAYER SACKS
+var c2 = {
+    'sheet': 'broncos-sacks-by-player-2015',
+    'chart': '#sacks-player-chart',
+    'x': 'Sacks',
+    'y': 'Player',
+    'ceiling': 20
+};
 var sacks_player = {};
+
+var width2 = 420,
+    height2 = 300,
+    barHeight = 20;
+
+var x2 = d3.scale.linear()
+    .range([0, width2]);
+var y2 = d3.scale.linear()
+    .range([height2, 0]);
+
+var chart2 = d3.select(c2.chart)
+    .attr("width", width2);
+
+d3.json('output/' + c2.sheet + '.json', function(error, data) {
+  x2.domain([0, d3.max(data, function(d) { return +d[c2.x]; })]);
+  y2.domain([0, 5]);
+
+  chart2.attr("height", barHeight * data.length);
+
+  var bar = chart2.selectAll("g")
+      .data(data)
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+
+  bar.append("rect")
+      .attr("width", function(d) { return x2(+d[c2.x]); })
+      .attr("height", barHeight - 1);
+
+  bar.append("text")
+      .attr("x", function(d) { return x2(+d[c2.x]) - 60; })
+      .attr("y", barHeight / 2)
+      .style("fill", "white")
+      .attr("dy", ".35em")
+      .text(function(d) { return d[c2.y] + ', ' + d[c2.x] + ' sacks'; });
+});
 </script>
 
 
