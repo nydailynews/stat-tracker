@@ -199,7 +199,7 @@ var yards = {
     'update_text': function()
     {
         $("#average").text(this.average);
-        $("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record on the ' + this.forecast + 'th game this season.');
+        $("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record in the ' + this.forecast + 'th game this season.');
     },
     'init': function()
     {
@@ -207,7 +207,7 @@ var yards = {
         var games_left = 16 - this.games;
 
         this.yards_to_go = career_yards.favre - career_yards.manning;
-        this.forecast = Math.floor(this.yards_to_go/this.average) + this.games;
+        this.forecast = Math.floor(this.yards_to_go/this.average) + this.games + 1;
     
         this.update_text();
     }
