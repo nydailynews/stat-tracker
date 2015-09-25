@@ -143,7 +143,7 @@
 
 <h1>Peyton Manning Passing Yardage Stat Tracker</h1>
 <p>Tracking Peyton Manning as he passes his way past Brett Favre on the NFL's list of all-time passing yardage.</p>
-<p>Manning's per-game yards are in blue, and his career yards are below, in orange. Favre's yards are in an ugly green.</p>
+<p>Manning's per-game yards are in blue, and his career yards are below in blue. Favre's yards are in that ugly green.</p>
 
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
@@ -152,7 +152,10 @@ g.secondary text, .chart rect.secondary {
     fill: #d9661a;
 }
 .chart rect {
-  fill: #0b235a;
+    fill: #0b235a;
+}
+rect.Favre {
+    fill: #2a503e;
 }
 </style>
 
@@ -316,6 +319,7 @@ var data = [
 
   bar.append("rect")
       .attr("width", function(d) { return x2(+d[c2.x]); })
+      .attr("class", function(d) { return d[c2.y]; })
       .attr("height", barHeight - 1);
 
   bar.append("text")
