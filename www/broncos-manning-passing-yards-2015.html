@@ -143,7 +143,7 @@
 
 <h1>Peyton Manning Passing Yardage Stat Tracker</h1>
 <p>Tracking Peyton Manning as he passes his way past Brett Favre on the NFL's list of all-time passing yardage.</p>
-<p>Manning's per-game yards are in blue, and his career yards are in orange.</p>
+<p>Manning's per-game yards are in blue, and his career yards are below, in orange. Favre's yards are in an ugly green.</p>
 
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
@@ -156,18 +156,113 @@ g.secondary text, .chart rect.secondary {
 }
 </style>
 
-<svg class="chart" id="pass-chart"></svg>
+<svg class="chart" id="yard-chart"></svg>
 
 <script>
 var c = {
     'sheet': 'broncos-manning-passing-yards-2015',
-    'chart': '#pass-chart',
+    'chart': '#yard-chart',
     'x': 'Week',
     'y': 'Yards',
-    'ceiling': 2000
+    'ceiling': 500
 }
+var yards = {
+    'total': 0,
+    'games': 0,
+    'average': 0,
+    'forecast': 0,
+    'update_text': function()
+    {
+        $("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record on the ' + this.forecast + 'th game this season.');
+    },
+    'init': function()
+    {
+        this.average = Math.round((this.total/this.games)*10)/10;
+        var games_left = 16 - this.games;
+        this.forecast = this.total + Math.round(this.average*games_left);
+        this.update_text();
+    }
+};
+
+var $chart = $(c.chart);
+var mobile_threshold = 500;
+var aspect = { width: 12, height: 6 };
+
+var margin = { top: 20, right: 20, bottom: 30, left: 30 },
+    width = $chart.width() - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([5, width], .1);
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var x_axis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var y_axis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(6);
+
+var chart = d3.select(c.chart)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
+d3.json('output/' + c.sheet + '.json', function(error, data) {
+    if (error) return console.warn(error);
+
+    // Tally up the sacks
+    data.map(function (d, index) 
+    {
+        if ( d['Yards'] !== "" )
+        {
+            yards.total += +d['Yards'];
+            yards.games += 1;
+        }
+        if ( yards.games > 0 )
+        {
+            yards.init();
+        }
+    });
+
+    x.domain(data.map(function(d) { return +d[c.x] }));
+    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
+
+    chart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(x_axis)
+        .append("text")
+        .attr("x", 10)
+        .attr("dy", "2.5em")
+        .style("text-anchor", "start")
+        .text(c.x);
+
+    chart.append("g")
+        .attr("class", "y axis")
+        .call(y_axis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(c.y);
+
+    chart.selectAll("bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(+d[c.x]);; })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(+d[c.y]); })
+        .attr("height", function(d) { return height - y(+d[c.y]); });
+});
+/*
 var $chart = $(c.chart);
 var mobile_threshold = 500;
 var aspect = { width: 12, height: 6 };
@@ -235,12 +330,6 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .style("text-anchor", "start")
         .text(c.x);
 
-/*
-    chart.append("path")
-        .attr("class", "line")
-        .attr("d", function(d) { console.log(d); return line(d['Week']); })
-        .style("stroke", function(d) { return '#00FF00'; });
-*/
     // Game Yards legend
     chart.append("g")
         .attr("class", "y axis")
@@ -251,16 +340,6 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .text('Game ' + c.y);
-
-    // Career Yards legend
-    chart.append("g")
-        .attr("class", "y axis secondary")
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 18)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text('Career ' + c.y);
 
     // Game Yards
     var yardage = chart.selectAll(".yards")
@@ -277,44 +356,8 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
         .attr("y", function(d) { return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
         .style("fill", function(d) { return color(d.name); });
-/*
-    chart.selectAll("bar")
-        .data(data)
-        .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", function(d) { console.log(+d[c.x]); return x0(+d[c.x]); })
-        .attr("width", (x1.rangeBand()/2) - 1)
-        .attr("y", function(d) { return y(+d[c.y]); })
-        .attr("height", function(d) { return height - y(+d[c.y]); })
-        .style("fill", function(d) { return '#0000ff'; })
-        .append("rect")
-        .attr("class", "bar secondary")
-        .attr("x", function(d) { return x0(+d[c.x]) + 10; })
-        .attr("width", (x1.rangeBand()/2) - 1)
-        .attr("y", function(d) { return y(+d[c.y]); })
-        .attr("height", function(d) { return height - y(+d[c.y]); })
-        .style("fill", function(d) { return '#ff0000'; });
-*/
-    // Career Yards
-    //    chart.selectAll("bar")
-    //    .data(data)
-
-    // Favre career yards line
-    var goal = chart.append("g")
-        .style("text-anchor", "start")
-        .text("Favre");
-
-    goal.append("line")
-        //.attr("class", "line")
-        //.attr("transform", "translate(0," + height + ")")
-        .attr("stroke", "red")
-        .attr("stroke-width", 1)
-        .attr("x1", 0)
-        .attr("y1", 50)
-        .attr("x2", 500)
-        .attr("y2", 50)
-
 });
+*/
 </script>
 
 
