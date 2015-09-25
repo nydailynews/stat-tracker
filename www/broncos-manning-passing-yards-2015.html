@@ -196,10 +196,11 @@ var yards = {
     'average': 0,
     'forecast': 0,
     'yards_to_go': 0,
+    'when_in_the_game': '',
     'update_text': function()
     {
         $("#average").text(this.average);
-        $("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record in the ' + this.forecast + 'th game this season.');
+        $("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record in the ' + this.when_in_the_game + ' quarter of the ' + this.forecast + 'th game this season.');
     },
     'init': function()
     {
@@ -207,7 +208,13 @@ var yards = {
         var games_left = 16 - this.games;
 
         this.yards_to_go = career_yards.favre - career_yards.manning;
+        var forecast = this.yards_to_go/this.average;
         this.forecast = Math.floor(this.yards_to_go/this.average) + this.games + 1;
+        var decimal = forecast - Math.floor(this.yards_to_go/this.average);
+        if ( decimal < .25 ) this.when_in_the_game = 'first'; 
+        else if ( decimal < .5 ) this.when_in_the_game = 'second'; 
+        else if ( decimal < .75 ) this.when_in_the_game = 'third'; 
+        else this.when_in_the_game = 'fourth'; 
     
         this.update_text();
     }
