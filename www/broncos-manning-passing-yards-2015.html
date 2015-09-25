@@ -161,7 +161,10 @@ rect.Favre {
 
 <h2>Peyton Manning's passing yards per game, 2015</h2>
 <svg class="chart" id="yard-chart"></svg>
+<p>At Manning's peak, in 2013, he averaged 342 yards per game. Across his career he has averaged 271 yards per game.</p>
+<p>Manning so far this season is averaging <span id="average"></span> passing yards per game.</p>
 <p id="at-this-rate"></p>
+
 <h2>Peyton Manning vs. Brett Favre, career yards</h2>
 <svg class="chart" id="favre-vs-manning"></svg>
 
@@ -195,6 +198,7 @@ var yards = {
     'yards_to_go': 0,
     'update_text': function()
     {
+        $("#average").text(this.average);
         $("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record on the ' + this.forecast + 'th game this season.');
     },
     'init': function()
