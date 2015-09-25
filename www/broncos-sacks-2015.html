@@ -288,6 +288,7 @@ var chart2 = d3.select(c2.chart)
     .attr("width", width2);
 
 d3.json('output/' + c2.sheet + '.json', function(error, data) {
+console.log(data);
   x2.domain([0, d3.max(data, function(d) { return +d[c2.x]; })]);
   y2.domain([0, 5]);
 
