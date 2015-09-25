@@ -293,7 +293,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
 
 var width2 = 420,
     height2 = 300,
-    barHeight = 20;
+    barHeight = 40;
 
 var x2 = d3.scale.linear()
     .range([0, width2]);
@@ -323,107 +323,11 @@ var data = [
       .attr("height", barHeight - 1);
 
   bar.append("text")
-      .attr("x", function(d) { return x2(+d[c2.x]) - 60; })
+      .attr("x", function(d) { return x2(+d[c2.x]) - 90; })
       .attr("y", barHeight / 2)
       .style("fill", "white")
       .attr("dy", ".35em")
-      .text(function(d) { return d[c2.y] + ', ' + d[c2.x] + ' yards'; });
-/*
-var $chart = $(c.chart);
-var mobile_threshold = 500;
-var aspect = { width: 12, height: 6 };
-
-var margin = { top: 20, right: 20, bottom: 30, left: 40 },
-    width = $chart.width() - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
-
-var x0 = d3.scale.ordinal()
-    .rangeRoundBands([5, width], .1);
-var x1 = d3.scale.ordinal();
-var y = d3.scale.linear()
-    .range([height, 0]);
-var color = d3.scale.ordinal()
-    .range(["#0b235a", "#d9661a"]);
-
-var x_axis = d3.svg.axis()
-    .scale(x0)
-    .orient("bottom");
-
-var y_axis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(6);
-
-var chart = d3.select(c.chart)
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-var career_total = 69691;
-var career_current = career_total;
-var favre_total = 71838;
-
-var line = d3.svg.line()
-    .x(function(d) { return [1, 2, 3, 4, 5]; })
-    .y(function(d) { return [500,500,500,500,500]; });
-    //.y(function(d) { return favre_total - career_total; });
-
-
-d3.json('output/' + c.sheet + '.json', function(error, data) {
-    if (error) return console.warn(error);
-
-    // Compile career yards
-    data.forEach(function(d) {
-        career_current += +d[c.y];
-        if ( +d[c.y] !== 0 ) d.Career = career_current - career_total;
-        else d.Career = 0;
-    });
-    var key_names = d3.keys(data[0]).filter( function(key) { return key !== "Week"; });
-
-    x0.domain(data.map(function(d) { return +d[c.x] }));
-    x1.domain(key_names).rangeRoundBands([0,x0.rangeBand()]);
-    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
-
-    chart.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(x_axis)
-        .append("text")
-        .attr("x", 10)
-        .attr("dy", "2.5em")
-        .style("text-anchor", "start")
-        .text(c.x);
-
-    // Game Yards legend
-    chart.append("g")
-        .attr("class", "y axis")
-        .call(y_axis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text('Game ' + c.y);
-
-    // Game Yards
-    var yardage = chart.selectAll(".yards")
-        .data(data)
-        .enter().append("g")
-        .attr("class", "g")
-        .attr("transform", function(d) { return "translate(" + x0(d[c.x]) + ",0)"; });
-
-    yardage.selectAll("rect")
-        .data(function(d) { var item = Array({ 'name': 'Yards', 'value': d[c.y] }, { 'name': 'Career', 'value': d['Career'] }); return item; })
-        .enter().append("rect")
-        .attr("width", x1.rangeBand())
-        .attr("x", function(d) { return x1(d.name); })
-        .attr("y", function(d) { return y(d.value); })
-        .attr("height", function(d) { return height - y(d.value); })
-        .style("fill", function(d) { return color(d.name); });
-});
-*/
+      .text(function(d) { return d[c2.y] + ', ' + d[c2.x] + ' career yards'; });
 </script>
 
 
