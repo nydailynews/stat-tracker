@@ -143,7 +143,7 @@
 
 <h1>Peyton Manning Passing Yardage Stat Tracker</h1>
 <p id="intro">We're tracking Peyton Manning as he passes his way past Brett Favre to number one on the NFL's list of all-time passing yardage.</p>
-<p>Manning's per-game yards are in blue, and his career yards are below in blue. Favre's yards are in that ugly green.</p>
+<p>Manning's per-game yards are in blue, and his career yards are below in blue. Favre's yards are in green.</p>
 
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
@@ -162,7 +162,8 @@ rect.Favre {
 <h2>Peyton Manning's passing yards per game, 2015</h2>
 <svg class="chart" id="yard-chart"></svg>
 <p>At Manning's peak, in 2013, he averaged 342 yards per game. Across his career he has averaged 271 yards per game.</p>
-<p>Manning so far this season is averaging <span id="average"></span> passing yards per game.</p>
+<p>Manning this season is averaging <span id="average"></span> passing yards per game.</p>
+<p>Peyton Manning broke Brett Farve's career passing record in the first quarter of the <a href="http://www.denverpost.com/broncos/ci_29121043/peyton-manning-passes-brett-favre-all-time-passing">Broncos' Nov. 16th loss to the Kansas City Chiefs</a>.</p>
 <p id="at-this-rate"></p>
 
 <h2>Peyton Manning vs. Brett Favre, career yards</h2>
@@ -200,7 +201,7 @@ var yards = {
     'update_text': function()
     {
         $("#average").text(this.average);
-        $("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record in the ' + this.when_in_the_game + ' quarter of the ' + this.forecast + 'th game this season.');
+        //$("#at-this-rate").html('<strong>At this rate, Peyton Manning will pass Brett Farve\'s career passing record in the ' + this.when_in_the_game + ' quarter of the ' + this.forecast + 'th game this season.');
     },
     'init': function()
     {
@@ -385,7 +386,6 @@ var data = [
     <p>Copyright &copy; 2015 <a href="http://www.denverpost.com/">The Denver Post</a></p>
     <p>
         <a href="http://www.denverpost.com/weather#denver">Denver Weather</a> 
-        &bull; <a href="http://dptv.denverpost.com/">Denver TV News</a>
         &bull; <a href="http://www.denverpost.com/broncos">Denver Broncos</a>
         &bull; <a href="http://www.denverpost.com/arcade/ci_26520665/daily-crossword">Daily Crossword</a>
         &bull; <a href="http://www.denverpost.com/sudoku">Sudoku</a>
