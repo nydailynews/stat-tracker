@@ -6,7 +6,7 @@
 
     <title>Denver Broncos Defensive Sacks Stat Tracker - The Denver Post</title>
 
-    <link rel="canonical" href="http://www.denverpost.com/2015/09/14/denver-broncos-sack-tracker-2015/" />
+    <link rel="canonical" href="" />
     <link rel="shortcut icon" href="http://extras.mnginteractive.com/live/media/favIcon/dpo/favicon.ico" type="image/x-icon" />
 
     <meta name="distribution" content="global" />
@@ -19,7 +19,7 @@
     <meta name="news_keywords" content="">
 
     <meta name="twitter:card" value="summary" />
-    <meta name="twitter:url" value="http://www.denverpost.com/2015/09/14/denver-broncos-sack-tracker-2015/" />
+    <meta name="twitter:url" value="" />
     <meta name="twitter:title" value="Denver Broncos Defensive Sacks Stat Tracker" />
     <meta name="twitter:description" value="" />
     <meta name="twitter:image" value="" />
@@ -36,7 +36,7 @@
     <meta property="fb:app_id" content="105517551922"/>
     <meta property="og:title" content="Denver Broncos Defensive Sacks Stat Tracker" />
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="http://www.denverpost.com/2015/09/14/denver-broncos-sack-tracker-2015/" />
+    <meta property="og:url" content="" />
     <meta property="og:image" content="" />
     <meta property="og:site_name" content="The Denver Post" />
     <meta property="og:description" content="Denver Broncos Defensive Sacks Stat Tracker" />
@@ -52,12 +52,12 @@
     </style>
 
     
-    <script type="text/javascript" src="http://extras.denverpost.com/media/js/jquery-min.js"></script>
-    <script type="text/javascript" src="http://www.googletagservices.com/tag/js/gpt.js"></script>
+    <script src="http://extras.denverpost.com/media/js/jquery-min.js"></script>
+    <script src="http://www.googletagservices.com/tag/js/gpt.js"></script>
     <script src="http://extras.denverpost.com/media/js/d3.v3.min.js" charset="utf-8"></script>
 
 
-    <script type="text/javascript">
+    <script>
         //Chartbeat startup
         var _sf_startpt=(new Date()).getTime();
         var _sf_async_config={};
@@ -104,7 +104,7 @@
         'Platform':'NGPS',
         'Content Source':'',
         'Slug':'',
-        'Publisher State':'CO',
+        'Publisher State':'COLORADO',
         'Byline':'',
         'User ID':'',
     "Publisher Domain": "denverpost.com",
@@ -142,9 +142,9 @@
 </script><!-- End Google Tag Manager -->
 
 <h1>Denver Broncos Defensive Sacks Stat Tracker</h1>
-<p id="intro">Tracking how many sacks the Denver Broncos defense logs in the 2015 NFL season.</p>
+<p id="intro">Tracking how many sacks the Denver Broncos defense logs in the 2016 NFL season.</p>
 
-<h2>Denver Broncos sacks, per game, 2015</h2>
+<h2>Denver Broncos sacks, per game, 2016</h2>
 <script src="stat-tracker.js"></script>
 <link href="style.css" type="text/css" rel="stylesheet"></link>
 <svg class="chart" id="sacks-chart"></svg>
@@ -152,14 +152,17 @@
 <p>The Denver Broncos' team record for sacks in a season is 57.</p>
 <p id="at-this-rate"></p>
 
-<h2>Denver Broncos sacks, per player, 2015 season</h2>
+<h2>Denver Broncos sacks, per player, 2016 season</h2>
 <svg class="chart" id="sacks-player-chart"></svg>
+
+<h2>Denver Broncos sacks, per season</h2>
+<svg class="chart" id="season-chart"></svg>
 
 
 
 <script>
 var c = {
-    'sheet': 'broncos-sacks-2015',
+    'sheet': 'broncos-sacks-2016',
     'chart': '#sacks-chart',
     'x': 'Week',
     'y': 'Sacks',
@@ -267,7 +270,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
 
 // PER-PLAYER SACKS
 var c2 = {
-    'sheet': 'broncos-sacks-by-player-2015',
+    'sheet': 'broncos-sacks-by-player-2016',
     'chart': '#sacks-player-chart',
     'x': 'Sacks',
     'y': 'Player',
@@ -315,6 +318,96 @@ d3.json('output/' + c2.sheet + '.json', function(error, data) {
 
 
 
+<script>
+var c = {
+    'sheet': 'broncos-sacks-per-season',
+    'chart': '#season-chart',
+    'x': 'Year',
+    'y': 'Sacks',
+    'ceiling': 60 
+};
+var $chart = $(c.chart);
+var mobile_threshold = 500;
+var aspect = { width: 12, height: 6 };
+
+var margin = { top: 20, right: 20, bottom: 30, left: 30 },
+    width = $chart.width() - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([5, width], .1);
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var x_axis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var y_axis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(6);
+
+var chart = d3.select(c.chart)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+d3.json('output/' + c.sheet + '.json', function(error, data) {
+    data.reverse();
+    if (error) return console.warn(error);
+
+    // Tally up the sacks
+    data.map(function (d, index) 
+    {
+        if ( d['Sacks'] !== "" )
+        {
+            sacks.total += +d['Sacks'];
+            sacks.games += 1;
+        }
+        if ( sacks.games > 0 )
+        {
+            //sacks.init();
+        }
+    });
+
+    x.domain(data.map(function(d) { return +d[c.x] }));
+    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
+
+    chart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(x_axis)
+        .append("text")
+        .attr("x", 10)
+        .attr("dy", "2.5em")
+        .style("text-anchor", "start")
+        .text(c.x);
+
+    chart.append("g")
+        .attr("class", "y axis")
+        .call(y_axis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(c.y);
+
+    chart.selectAll("bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(+d[c.x]);; })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(+d[c.y]); })
+        .attr("height", function(d) { return height - y(+d[c.y]); });
+});
+
+
+</script>
         <footer>
         <div id='dfp-20' style="margin-bottom:10px;">
             <script type='text/javascript'>
@@ -332,13 +425,13 @@ d3.json('output/' + c2.sheet + '.json', function(error, data) {
             googletag.display('dfp-21');
         </script>
     </div>
-    <script type="text/javascript">
+    <script>
     if ( iframe !== 1 )
     {
         //Chartbeat stuff
         _sf_async_config.uid = 2671;
         _sf_async_config.domain = 'denverpost.com';
-        _sf_async_config.sections = 'broncos,sports,data';
+        _sf_async_config.sections = 'broncos,sports,data,vendor,';
         _sf_async_config.useCanonical = true;
         (function(){
             function loadChartbeat() {

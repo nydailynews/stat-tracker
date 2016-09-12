@@ -1,4 +1,4 @@
 #!/bin/bash
 source .source.bash
-python stat.py  broncos-sacks-2015 broncos-sacks-by-player-2015 broncos-manning-passing-yards-2015 
+python2.7 stat.py  broncos-sacks-2016 broncos-sacks-by-player-2016 broncos-sacks-per-season
 ./ftp.bash --dir $REMOTE_DIR/output --host $REMOTE_HOST
