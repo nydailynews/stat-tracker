@@ -409,7 +409,7 @@ window.onload = function() {
 </script>
         <footer>
         <div id='dfp-20' style="margin-bottom:10px;">
-            <script type='text/javascript'>
+            <script>
                 googletag.defineSlot('/8013/denverpost.com/News',[[300,250],[300,600],[160,600],[300,1050]], 'dfp-20').addService(googletag.pubads()).setTargeting('pos',['Cube1_RRail_ATF']).setTargeting('kv','sports');                                          
                 googletag.pubads().enableSyncRendering();
                 googletag.enableServices();                                         
@@ -417,7 +417,7 @@ window.onload = function() {
         </script>
     </div>
     <div id='dfp-21' style="margin-bottom:10px;">
-        <script type='text/javascript'>
+        <script>
             googletag.defineSlot('/8013/denverpost.com/News',[[300,250]], 'dfp-21').addService(googletag.pubads()).setTargeting('pos',['Cube2_RRail_mid']).setTargeting('kv','sports');
             googletag.pubads().enableSyncRendering();
             googletag.enableServices();                                         
@@ -436,8 +436,6 @@ window.onload = function() {
             function loadChartbeat() {
                 window._sf_endpt=(new Date()).getTime();
                 var e = document.createElement('script');
-                e.setAttribute('language', 'javascript');
-                e.setAttribute('type', 'text/javascript');
                 e.setAttribute('src','//static.chartbeat.com/js/chartbeat.js');
                 document.body.appendChild(e);
             }
