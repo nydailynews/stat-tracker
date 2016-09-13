@@ -149,13 +149,14 @@
 <link href="style.css" type="text/css" rel="stylesheet"></link>
 <svg class="chart" id="sacks-chart"></svg>
 <p>The NFL team record for sacks in a season: 72, by the Chicago Bears, in 1984.</p>
-<p>The Denver Broncos' team record for sacks in a season is 57.</p>
+<p>The Denver Broncos' team record for sacks in a season, in the 35 years the NFL has tracked that statistic, is 57.</p>
 <p id="at-this-rate"></p>
+<p id="season-ranking"></p>
 
-<h2>Denver Broncos sacks, per player, 2016 season</h2>
+<h2 id="player-sacks">Denver Broncos sacks, per player, 2016 season</h2>
 <svg class="chart" id="sacks-player-chart"></svg>
 
-<h2>Denver Broncos sacks, per season</h2>
+<h2 id="season-sacks">Denver Broncos sacks, per season</h2>
 <svg class="chart" id="season-chart"></svg>
 
 
@@ -173,9 +174,29 @@ var sacks = {
     'games': 0,
     'average': 0,
     'forecast': 0,
+    'rank': 0,
     'update_text': function()
     {
-        $("#at-this-rate").html('<strong>At this rate, the Broncos defense will tally ' + this.forecast + ' sacks this season.');
+        $("#at-this-rate").html('<strong>At this rate, the Broncos defense will tally ' + this.forecast + ' sacks this season</strong>.');
+        if ( this.rank > 0 )
+        {
+            $("#season-ranking").html('<strong>If the Broncos do end up with ' + this.forecast + ' sacks,</strong> that will be the ' . this.to_ordinal(this.rank) . '-best season for sacks the defense has had.');
+        }
+    },
+    'to_ordinal': function(i)
+    {
+        var j = i % 10,
+            k = i % 100;
+        if (j == 1 && k != 11) {
+            return i + "st";
+        }
+        if (j == 2 && k != 12) {
+            return i + "nd";
+        }
+        if (j == 3 && k != 13) {
+            return i + "rd";
+        }
+        return i + "th";
     },
     'init': function()
     {
@@ -315,6 +336,8 @@ d3.json('output/' + c2.sheet + '.json', function(error, data) {
       .text(function(d) { return d[c2.y] + ', ' + d[c2.x]; });
 });
 
+
+// PER-SEASON SACKS
 window.onload = function() {
     var c = {
         'sheet': 'broncos-sacks-per-season',
