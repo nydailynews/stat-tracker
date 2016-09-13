@@ -149,7 +149,7 @@
 <link href="style.css" type="text/css" rel="stylesheet"></link>
 <svg class="chart" id="sacks-chart"></svg>
 <p>The NFL team record for sacks in a season: 72, by the Chicago Bears, in 1984.</p>
-<p>The Denver Broncos' team record for sacks in a season, in the 35 years the NFL has tracked that statistic, is 57.</p>
+<p>The Denver Broncos' team record for sacks in a season<span id="in-the-number-of-years"></span> is 57.</p>
 <p id="at-this-rate"></p>
 <p id="season-ranking"></p>
 
@@ -170,7 +170,9 @@ var c = {
     'ceiling': 9
 };
 var sacks = {
+    'seasons': 0,
     'total': 0,
+    'all_time': 0,
     'games': 0,
     'average': 0,
     'forecast': 0,
@@ -180,7 +182,8 @@ var sacks = {
         $("#at-this-rate").html('<strong>At this rate, the Broncos defense will tally ' + this.forecast + ' sacks this season</strong>.');
         if ( this.rank > 0 )
         {
-            $("#season-ranking").html('<strong>If the Broncos do end up with ' + this.forecast + ' sacks,</strong> that will be the ' . this.to_ordinal(this.rank) . '-best season for sacks the defense has had.');
+            $("#season-ranking").html('<strong>If the Broncos do end up with ' + this.forecast + ' sacks,</strong> that will be the ' + this.to_ordinal(this.rank) + '-best season for sacks the defense has had.');
+            $("#in-the-number-of-years").html(', in the ' + this.seasons + ' years the NFL has tracked that statistic, ');
         }
     },
     'to_ordinal': function(i)
@@ -379,21 +382,20 @@ window.onload = function() {
         data.reverse();
         if (error) return console.warn(error);
 
-        // Tally up the sacks
+        // Tally up the sacks, see where this season's projected sacks
+        // rank among all the years.
+        sacks.seasons = data.length + 1
         data.map(function (d, index) 
         {
             if ( d['Sacks'] !== "" )
             {
-                sacks.total += +d['Sacks'];
-                sacks.games += 1;
+                sacks.all_time += +d['Sacks'];
             }
-            if ( sacks.games > 0 )
-            {
-                //sacks.init();
-            }
-            
+            if ( sacks.forecast >= +d['Sacks'] ) sacks.rank += 1;
             data[index]['Year'] = ''+d['Year'].replace('19', '\'').replace('20', '\'');
         });
+        sacks.rank = sacks.seasons - sacks.rank;
+        sacks.update_text();
 
         x.domain(data.map(function(d) { return d[c.x] }));
         y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
