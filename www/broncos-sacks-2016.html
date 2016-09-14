@@ -49,6 +49,10 @@
         body { margin:2%; }
         @media only screen and (max-width:650px) {
         }
+        /* Only show certain tick marks on the per-season chart */
+        #season-chart g.x g.tick:nth-child(4n+2),
+        #season-chart g.x g.tick:nth-child(4n+3),
+        #season-chart g.x g.tick:nth-child(4n+4) { display: none; }
     </style>
 
     
@@ -350,7 +354,6 @@ window.onload = function() {
         'ceiling': 60 
     };
     var $chart = $(c.chart);
-    var mobile_threshold = 500;
     var aspect = { width: 12, height: 6 };
 
     var margin = { top: 20, right: 20, bottom: 30, left: 30 },
