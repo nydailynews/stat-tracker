@@ -71,7 +71,8 @@
     <script>
         var iframe = '';
         var section = '';
-        if ( document.location.hash === '#iframe' ) iframe = 1;
+        if ( document.location.hash === '#iframe' ) { iframe = 1; }
+        if ( window.top !== window.self ) { iframe = 1; }
         if ( document.location.hash === '#section' ) 
         {
             iframe = 1;
@@ -153,7 +154,7 @@
 <link href="style.css" type="text/css" rel="stylesheet"></link>
 <svg class="chart" id="sacks-chart"></svg>
 <p>The NFL team record for sacks in a season: 72, by the Chicago Bears, in 1984.</p>
-<p>The Denver Broncos' team record for sacks in a season<span id="in-the-number-of-years"></span> is 57.</p>
+<p>The Denver Broncos' team record for sacks in a season<span id="in-the-number-of-years"></span> is 57 (in 1984).</p>
 <p id="at-this-rate"></p>
 <p id="season-ranking"></p>
 
