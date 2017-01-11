@@ -11,12 +11,12 @@ Track stats with a google sheets backend, publish them with d3 and jquery.
 2. Create two new tabs: broncos-sacks-YEAR and broncos-sacks-by-player-YEAR
 3. The layout for the new tabs should look like the previous years' sheets.
 4. Add a row (insert it in row 2) in the broncos-sacks-per-season for the new year, give it a value of 0.
-5. Copy the previous year's html file (such as [blob/master/www/broncos-sacks-2016.html](blob/master/www/broncos-sacks-2016.html) and edit these lines:
-  * [The title element](blob/master/www/broncos-sacks-2016.html#L7)
-  * [Each instance of the article URL in the head](blob/master/www/broncos-sacks-2016.html#L9)
-  * [Each instance of the old year in the body](blob/master/www/broncos-sacks-2016.html#L151)
+5. Copy the previous year's html file (such as [www/broncos-sacks-2016.html](www/broncos-sacks-2016.html) and edit these lines:
+  * [The title element](www/broncos-sacks-2016.html#L7)
+  * [Each instance of the article URL in the head](www/broncos-sacks-2016.html#L9)
+  * [Each instance of the old year in the body](www/broncos-sacks-2016.html#L151)
 6. Add the new html file to the repo, upload it to extras (in the app folder, in stat-tacker).
-7. Update [deploy.bash](blob/master/deploy.bash) with the names of the two new tabs.
+7. Update [deploy.bash](deploy.bash) with the names of the two new tabs.
 8. SSH to prod, cd to the project directory, activate the virtual env and run ./deploy.bash
 
 # License
