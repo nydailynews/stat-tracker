@@ -3,6 +3,17 @@ Track stats with a google sheets backend, publish them with d3 and jquery.
 
 # How to's
 
+## How to set up your dev environment
+
+1. Clone this repo to your computer
+2. Create a virtual environment for this project: `mkvirtualenv STAT` or something like that. 
+  * If you don't have `mkvirtualenv` on your machine:
+    1. `pip install virtualenv virtualenvwrapper`
+    2. `echo "export WORKON_HOME=~/Env" >> ~/.bashrc`
+    3. `echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+    4. `source ~/.bashrc`
+3. Install the project requirements with `pip install -r requirements.txt`
+
 ## How to create a new tracker
 
 ## How to update the [Broncos Sacks Tracker](http://www.denverpost.com/2016/09/14/denver-broncos-sack-tracker-2016/) for a new year
