@@ -10,11 +10,21 @@ Track stats with a google sheets backend, publish them with d3 and jquery.
   * If you don't have `mkvirtualenv` on your machine:
     1. `pip install virtualenv virtualenvwrapper`
     2. `echo "export WORKON_HOME=~/Env" >> ~/.bashrc`
-    3. `echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+    3. `echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc`
     4. `source ~/.bashrc`
 3. Install the project requirements with `pip install -r requirements.txt`
 
 ## How to create a new tracker
+
+### How to get the back-end running
+
+1. Open the shared Sports spreadsheet (in Google Drive, if you don't have access ask Boniface)
+2. Create a new tab and give it a name. The name must be all-lowercase, also, use hyphens instead of spaces.
+3. Update [deploy.bash](deploy.bash) with the name of the new tab.
+
+### How to get the front-end displaying the data
+
+Basically: Look at how it was done on the [Broncos Sacks Tracker](www/broncos-sacks-2016.html) and take it from there.
 
 ## How to update the [Broncos Sacks Tracker](http://www.denverpost.com/2016/09/14/denver-broncos-sack-tracker-2016/) for a new year
 
