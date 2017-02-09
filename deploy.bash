@@ -1,4 +1,14 @@
 #!/bin/bash
 source .source.bash
-python2.7 stat.py  broncos-sacks-2016 broncos-sacks-by-player-2016 broncos-sacks-per-season
-./ftp.bash --dir $REMOTE_DIR/output --host $REMOTE_HOST
+TO='PROD'
+while [ "$1" != "" ]; do
+    case $1 in
+        --qa ) shift
+            TO='QA'
+            ;;
+    esac
+    shift
+done
+python2.7 stat.py --name $SHEET_NAME $DEPLOY_TABS
+if [ $TO == 'QA' ]; then deploy_qa; fi
+if [ $TO == 'PROD' ]; then deploy_prod; fi
