@@ -125,7 +125,7 @@ def main(args):
     """ 
         """
     for sheet in args.sheets[0]:
-        item = Sheet('Sports', sheet)
+        item = Sheet(args.name, sheet)
         item.set_options(args)
         stat = Stat(item)
         stat.publish()
@@ -140,6 +140,7 @@ def build_parser(args):
                                      epilog='')
     parser.add_argument("sheets", action="append", nargs="*")
     parser.add_argument("-v", "--verbose", dest="verbose", default=False, action="store_true")
+    parser.add_argument("-n", "--name", dest="name", default="Sports", help="The name of the sheet document.")
     return parser.parse_args()
 
 if __name__ == '__main__':
