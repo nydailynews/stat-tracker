@@ -14,6 +14,16 @@ Track stats with a google sheets backend, publish them with d3 and jquery.
     4. `source ~/.bashrc`
 3. Install the project requirements with `pip install -r requirements.txt`
 
+## How to set up Oauth authentication for downloading data from sheets
+
+[This article is marginally useful](https://developers.google.com/api-client-library/python/auth/service-accounts), but here's the essence:
+
+1. If you don't have a project in [GoogleAPI's console](https://console.developers.google.com/iam-admin/projects), create a project.
+2. [Create a service account under that project](https://console.developers.google.com/iam-admin/serviceaccounts/serviceaccounts-zero).
+3. Once the service account is created, create a key for that account.
+4. Share the spreadsheet with the email address for that key (it should have "@developer.gserviceaccount.com" in it)
+5. Set the ACCOUNT_KEY env var to the private key value.
+
 ## How to create a new tracker
 
 ### How to get the back-end running
