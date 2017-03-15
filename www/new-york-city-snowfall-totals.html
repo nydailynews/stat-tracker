@@ -1,0 +1,508 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>New York City Snowfall Tracker</title>
+    <style type="text/css">
+        /* Only show certain tick marks on the charts */
+        #yearly-snow-recent g.x g.tick { display: none; }
+        #yearly-snow-1869 g.x g.tick { display: none; }
+        @media only screen and (min-width:750px) {
+            #yearly-snow-recent g.x g.tick:nth-child(4n) { display: block; }
+            #yearly-snow-1869 g.x g.tick:nth-child(10n+2) { display: block; }
+        }
+        @media only screen and (max-width:750px) {
+            #yearly-snow-recent g.x g.tick:nth-child(6n) { display: block; }
+            #yearly-snow-1869 g.x g.tick:nth-child(20n+2) { display: block; }
+        }
+        @media only screen and (max-width:450px) {
+            #yearly-snow-recent g.x g.tick:nth-child(6n) { display: none; }
+            #yearly-snow-1869 g.x g.tick:nth-child(20n+2) { display: none; }
+            #yearly-snow-recent g.x g.tick:nth-child(6n) { display: block; }
+            #yearly-snow-1869 g.x g.tick:nth-child(35n+2) { display: block; }
+        }
+h1, h2, h3 {
+    font: bold 26px 'Open Sans Condensed', sans-serif;
+    color: #333;
+    margin: auto;
+}
+h2 { font-size: 26px; }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700' rel='stylesheet' type='text/css'>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <script>
+        var iframe = '';
+        var section = '';
+        if ( document.location.hash === '#iframe' ) { iframe = 1; }
+        if ( window.top !== window.self ) { iframe = 1; }
+        if ( document.location.hash === '#section' ) 
+        {
+            iframe = 1;
+            section = 1;
+        }
+    </script>
+
+<h1>New York City Snow Tracker</h1>
+<p id="intro"><strong>Tracking New York City's historical snowfall totals, as measured at Central Park</strong>.</p>
+<p>
+    <!-- It's been a <span id='state-of-the-snow'></span> season. -->
+    So far this season, <span id='current-season'></span> of snow have fallen.
+    The seasonal average for the previous 30 years is <span id='average-30-years'></span><!--, so we're <span id='average-30-well'></span> <span id='average-30-above'></span> average so far-->.
+</p>
+<p>
+    New York City's snowfall record for snow in a season is 75.6 inches, set in the 1995-1996 winter.
+</p>
+<p class='hide'>
+    So far this month, <span id='current-month'></span> of snow have fallen.
+</p>
+
+<h2>New York City snowfall, per year, last 30 years</h2>
+<script src="stat-tracker.js"></script>
+<link href="style.css" type="text/css" rel="stylesheet"></link>
+<svg class="chart" id="yearly-snow-recent"></svg>
+<p>New York City's snowfall record for snow in a month: <a href="http://www.nydailynews.com/new-york/storms-dumps-20-inches-city-making-february-snowiest-month-1869-article-1.176046" target="_parent">36.9 inches, set February 2010</a>.</p>
+<p id="at-this-rate"></p>
+<p id="season-ranking"></p>
+<!--
+<h2 id="snow-per-month">New York City snowfall, per month, 2017</h2>
+<svg class="chart" id="monthly-snow-current-year"></svg>
+
+-->
+<h2 id="snow-per-year-historical">New York City snowfall, per year, since 1869</h2>
+<svg class="chart" id="yearly-snow-1869"></svg>
+<p><em>Snowfall data courtesy the National Weather Service</em></p>
+
+<script>
+var snow = {
+    years: 0,
+    all_time: 0,
+    average: 0,
+    forecast: 0,
+    rank: 0,
+    month: (new Date()).getMonth(),
+    months: ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'],
+    month_str: '',
+    'total': { 'year': 0,
+        'monthly': { 
+            'october': 0,
+            'november': 0,
+            'december': 0,
+            'january': 0,
+            'february': 0,
+            'march': 0,
+            'april': 0,
+            'may': 0
+        }
+    },
+    'average': { 'year': 0,
+        'monthly': { 
+            'october': 0,
+            'november': 0,
+            'december': 0,
+            'january': 0,
+            'february': 0,
+            'march': 0,
+            'april': 0,
+            'may': 0
+        }
+    },
+    'record': { 
+        'year': { 'year': '1995-96', 'total': 75.6 },
+        'monthly': { 
+            'october': { 'year': '2011-12', 'total': 2.9 },
+            'november': { 'year': '1898-99', 'total': 19 },
+            'december': { 'year': '1947-48', 'total': 29.6 },
+            'january': { 'year': '2010-11', 'total': 36 },
+            'february': { 'year': '2009-10', 'total': 36.9 },
+            'march': { 'year': '1895-96', 'total': 30.5 },
+            'april': { 'year': '1874-75', 'total': 13.5 },
+        }
+    },   
+    get_inches: function(total)
+    {
+        // Is it 'inch', as in '1 inch of snow has fallen,' or 'inches'?
+        if ( +total == 1 ) return 'inch';
+        return 'inches';
+    },
+    update_text: function()
+    {
+        //$("#at-this-rate").html('<strong>At this rate, New York City ' + this.forecast + ' inches of snow this season</strong>.');
+        $('#current-season').html(this.current['Total Inches'] + ' ' + this.get_inches(this.current['Total Inches']));
+        $('#average-30-years').html(this.average.year + ' ' + this.get_inches(this.average.year));
+        if ( this.rank > 0 )
+        {
+            var rank_string = this.to_ordinal(this.rank);
+            if ( rank_string == '1st' ) rank_string = '';
+            else rank_string += '-';
+            $("#season-ranking").html('<strong>If the Broncos do end up with ' + this.forecast + ' sacks,</strong> that will be the ' + rank_string + 'best season for sacks the defense has had.');
+            $("#in-the-number-of-years").html(', in the ' + this.seasons + ' years the NFL has tracked that statistic, ');
+        }
+    },
+    evaluate_season: function()
+    {
+    },
+    to_ordinal: function(i)
+    {
+        var j = i % 10,
+            k = i % 100;
+        if (j == 1 && k != 11) {
+            return i + "st";
+        }
+        if (j == 2 && k != 12) {
+            return i + "nd";
+        }
+        if (j == 3 && k != 13) {
+            return i + "rd";
+        }
+        return i + "th";
+    },
+    init: function()
+    {
+        this.month_str = this.months[this.month];
+        this.average.year = Math.round((this.total.year/this.years)*10)/10;
+        //this.forecast = this.total + Math.round(this.average*games_left);
+        this.update_text();
+    }
+};
+
+
+var c = {
+    'sheet': 'snowfall-nyc',
+    'chart': '#yearly-snow-recent',
+    'x': 'Season',
+    'y': 'Total Inches',
+    'ceiling': 80
+};
+$(document).ready( function() {
+
+var $chart = $(c.chart);
+var aspect = { width: 12, height: 6 };
+
+var margin = { top: 20, right: 20, bottom: 30, left: 30 },
+    width = $chart.width() - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([5, width], .1);
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var x_axis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var y_axis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(6);
+
+var chart = d3.select(c.chart)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+d3.json('output/' + c.sheet + '.json', function(error, data) {
+    if (error) return console.warn(error);
+    snow.data = data;
+    snow.current = data[data.length-1];
+    data = data.slice(Math.max(data.length-31, 1))
+    // We don't want to factor the current year in the averages.
+    var this_year = data.pop();
+
+    // Tally up the snow
+    months = new Array('october', 'november', 'december', 'january', 'february', 'march', 'april', 'may');
+    data.map(function (d, index) 
+    {
+        if ( d[c.y] !== "" )
+        {
+            snow.total.year += +d[c.y];
+            snow.years += 1;
+        }
+        for (i=0; i < 8; i++ )
+        {
+            if ( d[months[i]] !== '' && d[months[i]] !== 'T' )
+            {
+                snow.total.monthly[months[i]] += +d[months[i]];
+            }
+        }
+    });
+    if ( snow.years > 0 )
+    {
+        // Put the current year back into the data.
+        data[data.length] = this_year;
+        snow.init();
+    }
+
+    x.domain(data.map(function(d) { return d[c.x] }));
+    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
+
+    chart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(x_axis)
+        .append("text")
+        .attr("x", 10)
+        .attr("dy", "2.5em")
+        .style("text-anchor", "start")
+        .text(c.x);
+
+    chart.append("g")
+        .attr("class", "y axis")
+        .call(y_axis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(c.y);
+
+    chart.selectAll("bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d[c.x]);; })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(+d[c.y]); })
+        .attr("height", function(d) { return height - y(+d[c.y]); });
+});
+
+
+
+// YEARLY SNOWFALL, SINCE 1869
+$(document).ready( function() {
+var c = {
+    'sheet': 'snowfall-nyc',
+    'chart': '#yearly-snow-1869',
+    'x': 'Season',
+    'y': 'Total Inches',
+    'ceiling': 80
+};
+
+var $chart = $(c.chart);
+var aspect = { width: 12, height: 6 };
+
+var margin = { top: 20, right: 20, bottom: 30, left: 30 },
+    width = $chart.width() - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+    console.log('w', width);
+if ( width < 350 ) width = 330;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([5, width], .5);
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var x_axis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var y_axis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(6);
+
+var chart = d3.select(c.chart)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+d3.json('output/' + c.sheet + '.json', function(error, data) {
+    x.domain(data.map(function(d) { return d[c.x] }));
+    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
+
+    chart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(x_axis)
+        .append("text")
+        .attr("x", 10)
+        .attr("dy", "2.5em")
+        .style("text-anchor", "start")
+        .text(c.x);
+
+    chart.append("g")
+        .attr("class", "y axis")
+        .call(y_axis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(c.y);
+
+    chart.selectAll("bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d[c.x]);; })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(+d[c.y]); })
+        .attr("height", function(d) { return height - y(+d[c.y]); });
+});
+});
+// MONTHLY SNOWFALL, CURRENT YEAR
+/*
+var c2 = {
+    'sheet': 'broncos-sacks-by-player-2016',
+    'chart': '#sacks-player-chart',
+    'x': 'Sacks',
+    'y': 'Player',
+    'ceiling': 20
+};
+var sacks_player = {};
+
+var width2 = 420,
+    height2 = 300,
+    barHeight = 20;
+
+var x2 = d3.scale.linear()
+    .range([0, width2]);
+var y2 = d3.scale.linear()
+    .range([height2, 0]);
+
+var chart2 = d3.select(c2.chart)
+    .attr("width", width2);
+
+d3.json('output/' + c2.sheet + '.json', function(error, data) {
+  x2.domain([0, d3.max(data, function(d) { return +d[c2.x]; })]);
+  y2.domain([0, 5]);
+
+  chart2.attr("height", barHeight * data.length);
+
+  var bar = chart2.selectAll("g")
+      .data(data)
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+
+  bar.append("rect")
+      .attr("width", function(d) { return x2(+d[c2.x]); })
+      .attr("height", barHeight - 1);
+
+  bar.append("text")
+      .attr("x", function(d) { return -5; })
+      .attr("y", barHeight / 2)
+      .style("fill", "white")
+      .style("text-anchor", "start")
+      .attr("dy", ".35em")
+      .attr("dx", ".8em")
+      .text(function(d) { return d[c2.y] + ', ' + d[c2.x]; });
+});
+
+
+// PER-SEASON SACKS
+window.onload = function() {
+    var c = {
+        'sheet': 'broncos-sacks-per-season',
+        'chart': '#season-chart',
+        'x': 'Year',
+        'y': 'Sacks',
+        'ceiling': 60 
+    };
+    var $chart = $(c.chart);
+    var aspect = { width: 12, height: 6 };
+
+    var margin = { top: 20, right: 20, bottom: 30, left: 30 },
+        width = $chart.width() - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
+
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([5, width], .1);
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var x_axis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var y_axis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(6);
+
+    var chart = d3.select(c.chart)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    d3.json('output/' + c.sheet + '.json', function(error, data) {
+        data.reverse();
+        if (error) return console.warn(error);
+
+        // Tally up the sacks, see where this season's projected sacks
+        // rank among all the years.
+        sacks.seasons = data.length + 1
+        data.map(function (d, index) 
+        {
+            if ( d['Sacks'] !== "" )
+            {
+                sacks.all_time += +d['Sacks'];
+            }
+            if ( sacks.forecast >= +d['Sacks'] ) sacks.rank += 1;
+            data[index]['Year'] = ''+d['Year'].replace('19', '\'').replace('20', '\'');
+        });
+        sacks.rank = sacks.seasons - sacks.rank;
+        sacks.update_text();
+
+        x.domain(data.map(function(d) { return d[c.x] }));
+        y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
+
+        chart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(x_axis)
+            .append("text")
+            .attr("x", 10)
+            .attr("dy", "2.5em")
+            .style("text-anchor", "start")
+            .text(c.x);
+
+        chart.append("g")
+            .attr("class", "y axis")
+            .call(y_axis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(c.y);
+
+        chart.selectAll("bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function(d) { return x(d[c.x]);; })
+            .attr("width", x.rangeBand())
+            .attr("y", function(d) { return y(+d[c.y]); })
+            .attr("height", function(d) { return height - y(+d[c.y]); });
+    });
+}
+*/
+
+}); // close document.ready()
+</script>
+    <script src="http://interactive.nydailynews.com/js/d3.v3.min.js" charset="utf-8"></script>
+    <footer>
+    <p>Copyright &copy; 2017 NY Daily News</p>
+    </footer>
+    <script>
+        if ( iframe === 1 )
+        {
+            $('h1, #intro, footer').remove();
+        }
+        if ( section === 1 )
+        {
+            $('section').remove();
+        }
+        
+    </script>
+</body>
+</html>
