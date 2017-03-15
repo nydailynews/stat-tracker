@@ -26,6 +26,9 @@ h1, h2, h3 {
     margin: auto;
 }
 h2 { font-size: 26px; }
+.title {
+    text-transform: capitalize;
+}
     </style>
 
     <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet" type="text/css">
@@ -50,6 +53,8 @@ h2 { font-size: 26px; }
 <p>
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
     So far this season, <span id='current-season'></span> of snow have fallen.
+    So far this month, <span id='current-month'></span> of snow have fallen.
+    The record for <span id='month' class='title'></span> snowfall is <span id='month-record'></span>, set in <span id='month-record-set'></span> season.
     The seasonal average for the previous 30 years is <span id='average-30-years'></span><!--, so we're <span id='average-30-well'></span> <span id='average-30-above'></span> average so far-->.
 </p>
 <p>
@@ -131,6 +136,12 @@ var snow = {
     {
         //$("#at-this-rate").html('<strong>At this rate, New York City ' + this.forecast + ' inches of snow this season</strong>.');
         $('#current-season').html(this.current['Total Inches'] + ' ' + this.get_inches(this.current['Total Inches']));
+        var current_month = 0;
+        if ( this.current[this.month_str] !== '' ) current_month = +this.current[this.month_str];
+        $('#current-month').text(current_month + ' ' + this.get_inches(current_month));
+        $('#month').text(this.month_str);
+        $('#month-record').text(this.record.monthly[this.month_str].total + ' inches');
+        $('#month-record-set').text('the ' + this.record.monthly[this.month_str].year);
         $('#average-30-years').html(this.average.year + ' ' + this.get_inches(this.average.year));
         if ( this.rank > 0 )
         {
