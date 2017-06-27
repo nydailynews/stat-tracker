@@ -117,7 +117,7 @@ class Stat:
         if records:
             json.dump(records, fn['json'])
             content = json.dumps(records)
-            fn['jsonp'].write('%s_callback(%s);' % (self.sheet.filename, content))
+            fn['jsonp'].write('%s_callback(%s);' % (self.sheet.filename.replace('-', '_'), content))
 
         return True
 

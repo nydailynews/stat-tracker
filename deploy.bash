@@ -10,5 +10,5 @@ while [ "$1" != "" ]; do
     shift
 done
 python2.7 stat.py --name $SHEET_NAME $DEPLOY_TABS
-if [ $TO == 'QA' ]; then deploy_qa; fi
-if [ $TO == 'PROD' ]; then deploy_prod; fi
+if [ $TO == 'QA' ]; then deployqa; fi
+if [ $TO == 'PROD' ]; then deployprod; fi
