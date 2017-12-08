@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>New York City Snowfall Tracker</title>
+    <link rel="canonical" href="http://www.nydailynews.com/new-york/new-york-city-snowfall-total-tracker-article-1.2994206">
     <style type="text/css">
         /* Only show certain tick marks on the charts */
         #yearly-snow-recent g.x g.tick { display: none; }
@@ -31,9 +32,8 @@ h2 { font-size: 26px; }
 }
     </style>
 
-    <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet" type="text/css">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700' rel='stylesheet' type='text/css'>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet' type='text/css'>
+    <script src="/js/jquery.min.js"></script>
 </head>
 <body>
     <script>
@@ -226,7 +226,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
     var this_year = data.pop();
 
     // Tally up the snow
-    months = new Array('october', 'november', 'december', 'january', 'february', 'march', 'april', 'may');
+    months = ['october', 'november', 'december', 'january', 'february', 'march', 'april', 'may'];
     data.map(function (d, index) 
     {
         if ( d[c.y] !== "" )
@@ -234,7 +234,7 @@ d3.json('output/' + c.sheet + '.json', function(error, data) {
             snow.total.year += +d[c.y];
             snow.years += 1;
         }
-        for (i=0; i < 8; i++ )
+        for ( var i=0; i < 8; i++ )
         {
             if ( d[months[i]] !== '' && d[months[i]] !== 'T' )
             {
@@ -500,7 +500,7 @@ window.onload = function() {
 
 }); // close document.ready()
 </script>
-    <script src="http://interactive.nydailynews.com/js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/js/d3.v3.min.js" charset="utf-8"></script>
     <footer>
     <p>Copyright &copy; 2017 NY Daily News</p>
     </footer>
