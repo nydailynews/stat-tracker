@@ -216,8 +216,18 @@ var chart = d3.select(c.chart)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var rando = function()
+    {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-d3.json('output/' + c.sheet + '.json', function(error, data) {
+        for ( var i=0; i < 8; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    };
+
+d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
     if (error) return console.warn(error);
     snow.data = data;
     snow.current = data[data.length-1];
@@ -324,7 +334,7 @@ var chart = d3.select(c.chart)
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-d3.json('output/' + c.sheet + '.json', function(error, data) {
+d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
     x.domain(data.map(function(d) { return d[c.x] }));
     y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
 
