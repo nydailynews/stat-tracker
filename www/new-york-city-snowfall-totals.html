@@ -53,7 +53,7 @@ h2 { font-size: 26px; }
 <p>
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
     So far this season, <span id='current-season'></span> of snow have fallen.
-    So far this month, <span id='current-month'></span> of snow have fallen, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (out of <span id="months-with-snow"></span> months with measurable snowfall).
+    So far this month, <span id='current-month'></span> of snow have fallen, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (out of <span id="months-with-snow"></span> <span id='month3' class='title'></span> months with measurable snowfall).
 </p>
 <p>
     The record for <span id='month2' class='title'></span> snowfall is <span id='month-record'></span>, set in <span id='month-record-set'></span> season.
@@ -144,7 +144,7 @@ var snow = {
         $('#current-month').text(current_month + ' ' + this.get_inches(current_month));
         $('#month-ranking').text(this.month_ranking(this.month_str));
         $('#months-with-snow').text(this.monthly[this.month_str].length);
-        $('#month1, #month2').text(this.month_str);
+        $('#month1, #month2, #month3').text(this.month_str);
         $('#month-record').text(this.record.monthly[this.month_str].total + ' inches');
         $('#month-record-set').text('the ' + this.record.monthly[this.month_str].year);
         $('#average-30-years').html(this.average.year + ' ' + this.get_inches(this.average.year));
@@ -161,7 +161,7 @@ var snow = {
 		// Given a month, figure out where this year's snowfall for that month ranks.
 		// Returns the ranking
         if ( this.current[m] == 0 ) return this.to_ordinal(this.monthly[m].length) + '-most';
-        var index = this.monthly[m].indexOf(this.current[m]);
+        var index = this.monthly[m].indexOf(+this.current[m]);
         if ( index === 0 ) return 'most';
         return this.to_ordinal(index) + '-most';
 	},
