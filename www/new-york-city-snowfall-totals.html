@@ -109,7 +109,8 @@ var snow = {
         }
     },
     'average': { 'year': 0,
-        'monthly': { 
+        'monthly': {
+            mean: { 
             'october': 0,
             'november': 0,
             'december': 0,
@@ -118,6 +119,17 @@ var snow = {
             'march': 0,
             'april': 0,
             'may': 0
+        },
+            median: { 
+            'october': 0,
+            'november': 0,
+            'december': 0,
+            'january': 0,
+            'february': 0,
+            'march': 0,
+            'april': 0,
+            'may': 0
+            }
         }
     },
     'record': { 
@@ -175,7 +187,7 @@ var snow = {
         return this.to_ordinal(index) + '-most';
 	},
 	month_average: function(m) {
-		// Given a month, figure out where this year's snowfall for that month ranks.
+		// Given a month ("december"), figure out where this year's snowfall for that month ranks.
 		// Returns the ranking
 		var values = this.monthly[m];
         var sum = values.reduce((previous, current) => current += previous);
@@ -204,6 +216,7 @@ var snow = {
         this.month_str = this.months[this.month];
         this.average.year = Math.round((this.total.year/this.years)*10)/10;
         //this.forecast = this.total + Math.round(this.average*games_left);
+
 		// Index the snowfall by month
 		var l = this.data.length;
 		for ( var i = 0; i < l; i ++ ) {
@@ -214,9 +227,17 @@ var snow = {
             }
 		}
         
+        // Sort the month's totals. Also build the averages: mean and median.
         for ( var m = 0; m < 12; m ++ ) {
             var mon = this.months[m];
             this.monthly[mon].sort(function (a, b) { return b-a; })
+            var sum = this.monthly[mon].reduce( function(a, b) { return a + b; }, 0);
+            var mean = Math.round((sum/this.monthly[mon].length)*10)/10;
+            this.average.monthly.mean[mon] = mean;
+
+            var half = Math.floor(this.monthly[mon].length/2);
+            var median = this.monthly[mon][half];
+            this.average.monthly.median[mon] = median;
         }
         this.update_text();
     }
@@ -402,7 +423,7 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
         .attr("height", function(d) { return height - y(+d[c.y]); });
 });
 });
-// MONTHLY SNOWFALL, CURRENT YEAR
+// MONTHLY SNOWFALL COMPARED AGAINST MONTHLY AVERAGES, CURRENT YEAR
 /*
 var c2 = {
     'sheet': 'broncos-sacks-by-player-2016',
