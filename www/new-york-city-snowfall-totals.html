@@ -32,7 +32,7 @@ h2 { font-size: 26px; }
 }
     </style>
 
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet'>
     <script src="/js/jquery.min.js"></script>
 </head>
 <body>
@@ -61,6 +61,9 @@ h2 { font-size: 26px; }
 </p>
 <p>
     The seasonal average for the previous 30 years is <span id='average-30-years'></span><!--, so we're <span id='average-30-well'></span> <span id='average-30-above'></span> average so far-->.
+    <!--
+    We're <span id='a-b-season'></span> average for the season, but we still have <span id='months-to-go'></span> months to go.
+    -->
 </p>
 <p>
     New York City's record for snow in a season is 75.6 inches, set in the 1995-1996 winter.
@@ -68,7 +71,7 @@ h2 { font-size: 26px; }
 
 <h2>New York City snowfall, per year, last 30 years</h2>
 <script src="stat-tracker.js"></script>
-<link href="style.css" type="text/css" rel="stylesheet"></link>
+<link href="style.css" rel="stylesheet"></link>
 <svg class="chart" id="yearly-snow-recent"></svg>
 <p>New York City's record for snow in a month: <a href="http://www.nydailynews.com/new-york/storms-dumps-20-inches-city-making-february-snowiest-month-1869-article-1.176046" target="_parent">36.9 inches, set February 2010</a>.</p>
 <p id="at-this-rate"></p>
@@ -236,18 +239,14 @@ var margin = { top: 20, right: 20, bottom: 30, left: 30 },
     width = $chart.width() - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([5, width], .1);
-var y = d3.scale.linear()
+var x = d3.scaleBand()
+    .range([5, width], .1);
+var y = d3.scaleLinear()
     .range([height, 0]);
 
-var x_axis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
+var x_axis = d3.axisBottom(x);
 
-var y_axis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
+var y_axis = d3.axisLeft(y)
     .ticks(6);
 
 var chart = d3.select(c.chart)
@@ -327,7 +326,7 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
         .enter().append("rect")
         .attr("class", "bar")
         .attr("x", function(d) { return x(d[c.x]);; })
-        .attr("width", x.rangeBand())
+        .attr("width", x.bandwidth())
         .attr("y", function(d) { return y(+d[c.y]); })
         .attr("height", function(d) { return height - y(+d[c.y]); });
 });
@@ -353,18 +352,13 @@ var margin = { top: 20, right: 20, bottom: 30, left: 30 },
     console.log('w', width);
 if ( width < 350 ) width = 330;
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([5, width], .5);
-var y = d3.scale.linear()
+var x = d3.scaleBand()
+    .range([5, width], .5);
+var y = d3.scaleLinear()
     .range([height, 0]);
 
-var x_axis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-var y_axis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
+var x_axis = d3.axisBottom(x);
+var y_axis = d3.axisLeft(y)
     .ticks(6);
 
 var chart = d3.select(c.chart)
@@ -403,7 +397,7 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
         .enter().append("rect")
         .attr("class", "bar")
         .attr("x", function(d) { return x(d[c.x]);; })
-        .attr("width", x.rangeBand())
+        .attr("width", x.bandwidth())
         .attr("y", function(d) { return y(+d[c.y]); })
         .attr("height", function(d) { return height - y(+d[c.y]); });
 });
@@ -550,9 +544,9 @@ window.onload = function() {
 
 }); // close document.ready()
 </script>
-    <script src="/js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/js/d3/d3.v4.min.js" charset="utf-8"></script>
     <footer>
-    <p>Copyright &copy; 2017 NY Daily News</p>
+    <p>Copyright &copy; 2017-2018 NY Daily News</p>
     </footer>
     <script>
         if ( iframe === 1 )
