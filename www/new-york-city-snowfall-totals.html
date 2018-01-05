@@ -50,6 +50,7 @@ h2 { font-size: 26px; }
 
 <h1>New York City Snow Tracker</h1>
 <p id="intro"><strong>Tracking New York City's historical snowfall totals, as measured at Central Park</strong>.</p>
+<p id="latest"></p>
 <p>
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
     So far this season, <span id='current-season'></span> of snow have fallen.
@@ -215,9 +216,22 @@ var snow = {
 	most_recent_text: function()
     {
         // Download the most-recent json file, populate the lead graf if it's a recent / big snow.
+        var request = new XMLHttpRequest();
+        request.open('GET', 'output/snowfall-nyc-daily.json', true);
+        request.onload = function ()
+        {
+            if ( request.status >= 200 && request.status < 400 )
+            {
+                var data = JSON.parse(request.responseText);
+                var latest = data.pop();
+            }
+        }
+        request.send();
     },
     init: function()
     {
+        this.most_recent_text();
+
         this.month_str = this.months[this.month];
         this.average.year = Math.round((this.total.year/this.years)*10)/10;
         //this.forecast = this.total + Math.round(this.average*games_left);
