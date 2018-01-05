@@ -584,7 +584,7 @@ window.onload = function() {
 
 }); // close document.ready()
 </script>
-        <p class="latest-news"><a href="http://www.nydailynews.com/tags/nyc-weather">NYC WEATHER NEWS</a>: <strong id="latest-news-headline"></strong></p>
+    <p class="latest-news"><a target="_top" href="http://www.nydailynews.com/tags/nyc-weather">NYC WEATHER NEWS</a>: <strong id="latest-news-headline"></strong></p>
         
     <script>
         var s = document.createElement('script');
@@ -596,7 +596,10 @@ window.onload = function() {
                 text += possible.charAt(Math.floor(Math.random() * possible.length));
             return text;
         }
-        s.onload = function() { document.getElementById('latest-news-headline').innerHTML = hed; }
+        s.onload = function() { 
+            document.getElementById('latest-news-headline').innerHTML = hed; 
+            document.querySelectorAll('#latest-news-headline a')[0].target = "_top";
+        }
         s.setAttribute('src', '//interactive.nydailynews.com/feeds/tag-nyc-weather-1.js?' + rando());
         document.getElementsByTagName('head')[0].appendChild(s);
     </script>
