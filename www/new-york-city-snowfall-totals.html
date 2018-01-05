@@ -70,7 +70,6 @@ h2 { font-size: 26px; }
 </p>
 
 <h2>New York City snowfall, per year, last 30 years</h2>
-<script src="stat-tracker.js"></script>
 <link href="style.css" rel="stylesheet"></link>
 <svg class="chart" id="yearly-snow-recent"></svg>
 <p>New York City's record for snow in a month: <a href="http://www.nydailynews.com/new-york/storms-dumps-20-inches-city-making-february-snowiest-month-1869-article-1.176046" target="_parent">36.9 inches, set February 2010</a>.</p>
@@ -83,7 +82,7 @@ h2 { font-size: 26px; }
 -->
 <h2 id="snow-per-year-historical">New York City snowfall, per year, since 1869</h2>
 <svg class="chart" id="yearly-snow-1869"></svg>
-<p><em>Snowfall data courtesy the National Weather Service</em></p>
+<p><em>Snow data courtesy the National Weather Service</em></p>
 
 <script>
 var snow = {
@@ -210,6 +209,10 @@ var snow = {
             return i + "rd";
         }
         return i + "th";
+    },
+	most_recent_text: function()
+    {
+        // Download the most-recent json file, populate the lead graf if it's a recent / big snow.
     },
     init: function()
     {
@@ -565,6 +568,22 @@ window.onload = function() {
 
 }); // close document.ready()
 </script>
+        <p class="latest-news"><a href="http://www.nydailynews.com/tags/nyc-weather">NYC WEATHER NEWS</a>: <strong id="latest-news-headline"></strong></p>
+        
+    <script>
+        var s = document.createElement('script');
+        var rando = function() { 
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            for( var i=0; i < 5; i++ )
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            return text;
+        }
+        s.onload = function() { document.getElementById('latest-news-headline').innerHTML = hed; }
+        s.setAttribute('src', '//interactive.nydailynews.com/feeds/tag-nyc-weather-1.js?' + rando());
+        document.getElementsByTagName('head')[0].appendChild(s);
+    </script>
     <script src="/js/d3/d3.v4.min.js" charset="utf-8"></script>
     <footer>
     <p>Copyright &copy; 2017-2018 NY Daily News</p>
