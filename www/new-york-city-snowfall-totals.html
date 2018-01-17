@@ -51,6 +51,7 @@
 <h1>New York City Snow Tracker</h1>
 <p id="intro"><strong>Tracking New York City's historical snowfall totals, as measured at Central Park</strong>.</p>
 <p id="latest"></p>
+<h2>New York City snow, by month</h2>
 <p>
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
     So far this month, <span id='current-month'></span> of snow have fallen, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (of the <span id="months-with-snow"></span> <span id='month3' class='title'></span> months with measurable snowfall).
@@ -59,6 +60,10 @@
     The record for <span id='month2' class='title'></span> snowfall is <span id='month-record'></span>, set in <span id='month-record-set'></span> season.
     Among the years that it snowed in <span id='month4' class='title'></span>, an average <span id='month-average'></span> fell those months.
 </p>
+<figure id="month-averages-chart">
+	<figcaption>This chart compares the current season's snowfall against NYC's average for that month.</figcaption>
+	<svg class="chart" id="grouped-snow-monthly"></svg>
+</figure>
 
 <h2>New York City snowfall, per year, last 30 years</h2>
 <link href="style.css" rel="stylesheet"></link>
@@ -402,7 +407,6 @@ var c = {
 };
 
 var $chart = $(c.chart);
-var aspect = { width: 12, height: 6 };
 
 var margin = { top: 20, right: 20, bottom: 30, left: 30 },
     width = $chart.width() - margin.left - margin.right,
@@ -459,14 +463,41 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
         .attr("y", function(d) { return y(+d[c.y]); })
         .attr("height", function(d) { return height - y(+d[c.y]); });
 });
-});
+
+// GROUPED CHART
 // MONTHLY SNOWFALL COMPARED AGAINST MONTHLY AVERAGES, CURRENT YEAR
+var c = {
+    'chart': '#grouped-snow-monthly',
+    'x': 'Month',
+    'y': 'Inches',
+    'ceiling': 20
+};
+var $chart = $(c.chart),
+	margin = { top: 20, right: 20, bottom: 30, left: 30 },
+	width = +$chart.attr('width') - margin.left - margin.right,
+	height = +$chart.attr('height') - margin.top - margin.bottom,
+	g = $chart.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+var x0 = d3.scaleBand()
+	.rangeRound( [0, width] )
+	.paddingInner(0.1);
+
+var x1 = d3.scaleBand()
+	.padding(0.05);
+
+var y = d3.scaleLinear()
+	.rangeRound( [height, 0] );
+
+var z = d3.scaleOrdinal()
+	.range(['#ff0000', '#ff9999']);
+
+}); // Close document.ready
 /*
 var c2 = {
     'sheet': 'broncos-sacks-by-player-2016',
-    'chart': '#sacks-player-chart',
-    'x': 'Sacks',
-    'y': 'Player',
+    'chart': '#grouped-snow-monthly',
+    'x': 'Month',
+    'y': 'Inches',
     'ceiling': 20
 };
 var sacks_player = {};
