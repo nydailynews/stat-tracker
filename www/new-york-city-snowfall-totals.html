@@ -615,8 +615,10 @@ window.onload = function() {
             return text;
         }
         s.onload = function() { 
-            document.getElementById('latest-news-headline').innerHTML = hed; 
-            document.querySelectorAll('#latest-news-headline a')[0].target = "_top";
+            window.setTimeout(function() {
+                document.getElementById('latest-news-headline').innerHTML = hed; 
+                document.querySelectorAll('#latest-news-headline a')[0].target = "_top";
+                }, 2000 );
         }
         s.setAttribute('src', '//interactive.nydailynews.com/feeds/tag-nyc-weather-1.js?' + rando());
         document.getElementsByTagName('head')[0].appendChild(s);
