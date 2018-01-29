@@ -316,9 +316,9 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
     console.info("HEIGHT", c, margin);
 
     var x = d3.scaleBand()
-        .range([5, width], .1);
+        .range([5, c.width], .1);
     var y = d3.scaleLinear()
-        .range([height, 0]);
+        .range([c.height, 0]);
 
     var x_axis = d3.axisBottom(x);
 
@@ -422,7 +422,7 @@ d3.json('output/' + c2.sheet + '.json?' + rando(), function(error, data) {
     var y_axis = d3.axisLeft(y)
         .ticks(6);
 
-    var chart = d3.select(c.chart)
+    var chart = d3.select(c2.chart)
         .attr("width", c2.width + margin.left + margin.right)
         .attr("height", c2.height + margin.top + margin.bottom)
         .append("g")
