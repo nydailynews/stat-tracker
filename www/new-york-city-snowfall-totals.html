@@ -283,6 +283,7 @@ var snow = {
             this.average.monthly.median[mon] = median;
         }
         this.update_text();
+		if ( typeof month_chart !== 'undefined' ) month_chart();
     }
 };
 
@@ -313,7 +314,6 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
     var margin = { top: 20, right: 20, bottom: 30, left: 30 };
     c.width = $chart.width() - margin.left - margin.right;
     c.height = 200 - margin.top - margin.bottom;
-    console.info("HEIGHT", c, margin);
 
     var x = d3.scaleBand()
         .range([5, c.width], .1);
@@ -404,7 +404,6 @@ var c2 = {
     'ceiling': 80
 };
 
-console.info("HEIGHT", c2.height, c2.width, margin);
 d3.json('output/' + c2.sheet + '.json?' + rando(), function(error, data) {
     var $chart = $(c2.chart);
 
@@ -469,31 +468,64 @@ var c3 = {
     'y': 'Inches',
     'ceiling': 20
 };
+function month_chart() {
 var $chart = $(c3.chart),
-	margin = { top: 20, right: 20, bottom: 30, left: 30 },
-	width = +$chart.attr('width') - margin.left - margin.right,
-	height = +$chart.attr('height') - margin.top - margin.bottom,
-	g = $chart.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+	margin = { top: 20, right: 20, bottom: 30, left: 30 };
+c3.width = +$chart.width() - margin.left - margin.right;
+c3.height = +$chart.height() - margin.top - margin.bottom;
+var g = d3.select(c3['chart']).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+console.log('W', c3.width);
 var x0 = d3.scaleBand()
-	.rangeRound( [0, width] )
+	.rangeRound( [0, c3.width] )
 	.paddingInner(0.1);
 
 var x1 = d3.scaleBand()
 	.padding(0.05);
 
 var y = d3.scaleLinear()
-	.rangeRound( [height, 0] );
+	.rangeRound( [c3.height, 0] );
 
 var z = d3.scaleOrdinal()
 	.range(['#ff0000', '#ff9999']);
 
 // Put the data together
 var months = ['november', 'december', 'january', 'february', 'march', 'april'];
-var data = {
-	months: ['november', 'december', 'january', 'february', 'march', 'april'],
-};
+var keys = ['current-snow', 'average-snow'];
+var data = [];
+console.log(snow);
+for ( var i = 0; i < months.length; i ++ ) {
+	var r = {};
+	r['month'] = months[i];
+	r['current-snow'] = snow['current'][months[i]];
+	r['average-snow'] = snow['average']['monthly']['mean'][months[i]];
+	data.push(r);
+}
+data['columns'] = ['month', 'current-snow', 'average-snow'];
+console.log(data);
 
+//x0.domain(months);
+x0.domain(data.map(function(d) { return d.month; }));
+x1.domain(keys).rangeRound([0, x0.bandwidth()]);
+y.domain([0, 15]).nice();
+//y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
+
+console.log(g);
+g.append('g')
+    .selectAll('g')
+    .data(data)
+	.enter().append('g')
+		.attr('transform', function(d) { console.log(d, x0('november')); return 'translate(' + x0(d.month) + ',0)'; })
+	.selectAll('rect')
+	.data(function(d) { return keys.map(function(key) { return { key: key, value: d[key]}; }); })
+	.enter().append('rect')
+		.attr('x', function(d) { return x1(d.key); })
+		.attr('y', function(d) { return y(d.value); })
+		.attr('width', x1.bandwidth())
+		.attr('height', function(d) { return c3.height - y(d.value); })
+		.attr('fill', function(d) { return z(d.key); });
+
+}	// Close function month_chart
 
 //}); // Close document.ready
 /*
