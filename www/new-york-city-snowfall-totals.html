@@ -34,6 +34,7 @@
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet'>
     <script src="/js/jquery.min.js"></script>
+    <script src="/js/d3/d3.v4.min.js" charset="utf-8"></script>
 </head>
 <body>
     <script>
@@ -54,7 +55,7 @@
 <h2>New York City snow, by month</h2>
 <p>
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
-    So far this month, <span id='current-month'></span> of snow have fallen, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (of the <span id="months-with-snow"></span> <span id='month3' class='title'></span> months with measurable snowfall).
+    So far this month, <span id='current-month'></span> of snow fell, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (of the <span id="months-with-snow"></span> <span id='month3' class='title'></span> months with measurable snowfall).
 </p>
 <p>
     The record for <span id='month2' class='title'></span> snowfall is <span id='month-record'></span>, set in <span id='month-record-set'></span> season.
@@ -69,7 +70,7 @@
 <link href="style.css" rel="stylesheet"></link>
 <svg class="chart" id="yearly-snow-recent"></svg>
 <p>
-    So far this season, <span id='current-season'></span> of snow have fallen, making this the <span id='season-ranking'></span> snowiest season in the <span id='season-count'></span> seasons that records were kept.
+    So far this season, we've had <span id='current-season'></span> of snow, making this the <span id='season-ranking'></span> snowiest season in the <span id='season-count'></span> seasons that records were kept.
 </p>
 <p>
     The seasonal average for the previous 30 years is <span id='average-30-years'></span><!--, so we're <span id='average-30-well'></span> <span id='average-30-above'></span> average so far-->.
@@ -285,7 +286,17 @@ var snow = {
     }
 };
 
+var rando = function() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    for ( var i=0; i < 8; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+};
+
+//$(document).ready( function() {
 var c = {
     'sheet': 'snowfall-nyc',
     'chart': '#yearly-snow-recent',
@@ -293,48 +304,36 @@ var c = {
     'y': 'Total Inches',
     'ceiling': 80
 };
-$(document).ready( function() {
-
-var $chart = $(c.chart);
-var aspect = { width: 12, height: 6 };
-
-var margin = { top: 20, right: 20, bottom: 30, left: 30 },
-    width = $chart.width() - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
-
-var x = d3.scaleBand()
-    .range([5, width], .1);
-var y = d3.scaleLinear()
-    .range([height, 0]);
-
-var x_axis = d3.axisBottom(x);
-
-var y_axis = d3.axisLeft(y)
-    .ticks(6);
-
-var chart = d3.select(c.chart)
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var rando = function()
-    {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-        for ( var i=0; i < 8; i++ )
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return text;
-    };
 
 d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
     if (error) return console.warn(error);
+    var $chart = $(c.chart);
+    var aspect = { width: 12, height: 6 };
+
+    var margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    c.width = $chart.width() - margin.left - margin.right;
+    c.height = 200 - margin.top - margin.bottom;
+    console.info("HEIGHT", c, margin);
+
+    var x = d3.scaleBand()
+        .range([5, width], .1);
+    var y = d3.scaleLinear()
+        .range([height, 0]);
+
+    var x_axis = d3.axisBottom(x);
+
+    var y_axis = d3.axisLeft(y)
+        .ticks(6);
+
+    var chart = d3.select(c.chart)
+        .attr("width", c.width + margin.left + margin.right)
+        .attr("height", c.height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     snow.data = data;
     snow.current = data[data.length-1];
     data = data.slice(Math.max(data.length-31, 1))
-    // We don't want to factor the current year in the averages.
+    // We do not want to factor the current year in the averages.
     var this_year = data.pop();
 
     // Tally up the snow
@@ -366,7 +365,7 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
 
     chart.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", "translate(0," + c.height + ")")
         .call(x_axis)
         .append("text")
         .attr("x", 10)
@@ -391,14 +390,13 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
         .attr("x", function(d) { return x(d[c.x]);; })
         .attr("width", x.bandwidth())
         .attr("y", function(d) { return y(+d[c.y]); })
-        .attr("height", function(d) { return height - y(+d[c.y]); });
+        .attr("height", function(d) { return c.height - y(+d[c.y]); });
 });
 
 
 
 // YEARLY SNOWFALL, SINCE 1869
-$(document).ready( function() {
-var c = {
+var c2 = {
     'sheet': 'snowfall-nyc',
     'chart': '#yearly-snow-1869',
     'x': 'Season',
@@ -406,43 +404,42 @@ var c = {
     'ceiling': 80
 };
 
-var $chart = $(c.chart);
+console.info("HEIGHT", c2.height, c2.width, margin);
+d3.json('output/' + c2.sheet + '.json?' + rando(), function(error, data) {
+    var $chart = $(c2.chart);
 
-var margin = { top: 20, right: 20, bottom: 30, left: 30 },
-    width = $chart.width() - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
-    console.log('w', width);
-if ( width < 350 ) width = 330;
+    var margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    c2.width = $chart.width() - margin.left - margin.right;
+    c2.height = 200 - margin.top - margin.bottom;
+    if ( c2.width < 350 ) c2.width = 330;
 
-var x = d3.scaleBand()
-    .range([5, width], .5);
-var y = d3.scaleLinear()
-    .range([height, 0]);
+    var x = d3.scaleBand()
+        .range([5, c2.width], .5);
+    var y = d3.scaleLinear()
+        .range([c2.height, 0]);
 
-var x_axis = d3.axisBottom(x);
-var y_axis = d3.axisLeft(y)
-    .ticks(6);
+    var x_axis = d3.axisBottom(x);
+    var y_axis = d3.axisLeft(y)
+        .ticks(6);
 
-var chart = d3.select(c.chart)
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var chart = d3.select(c.chart)
+        .attr("width", c2.width + margin.left + margin.right)
+        .attr("height", c2.height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
-    x.domain(data.map(function(d) { return d[c.x] }));
-    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
+    x.domain(data.map(function(d) { return d[c2.x] }));
+    y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c2.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
 
     chart.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", "translate(0," + c2.height + ")")
         .call(x_axis)
         .append("text")
         .attr("x", 10)
         .attr("dy", "2.5em")
         .style("text-anchor", "start")
-        .text(c.x);
+        .text(c2.x);
 
     chart.append("g")
         .attr("class", "y axis")
@@ -452,27 +449,27 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text(c.y);
+        .text(c2.y);
 
     chart.selectAll("bar")
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function(d) { return x(d[c.x]);; })
+        .attr("x", function(d) { return x(d[c2.x]);; })
         .attr("width", x.bandwidth())
-        .attr("y", function(d) { return y(+d[c.y]); })
-        .attr("height", function(d) { return height - y(+d[c.y]); });
+        .attr("y", function(d) { return y(+d[c2.y]); })
+        .attr("height", function(d) { return c2.height - y(+d[c2.y]); });
 });
 
 // GROUPED CHART
 // MONTHLY SNOWFALL COMPARED AGAINST MONTHLY AVERAGES, CURRENT YEAR
-var c = {
+var c3 = {
     'chart': '#grouped-snow-monthly',
     'x': 'Month',
     'y': 'Inches',
     'ceiling': 20
 };
-var $chart = $(c.chart),
+var $chart = $(c3.chart),
 	margin = { top: 20, right: 20, bottom: 30, left: 30 },
 	width = +$chart.attr('width') - margin.left - margin.right,
 	height = +$chart.attr('height') - margin.top - margin.bottom,
@@ -491,7 +488,14 @@ var y = d3.scaleLinear()
 var z = d3.scaleOrdinal()
 	.range(['#ff0000', '#ff9999']);
 
-}); // Close document.ready
+// Put the data together
+var months = ['november', 'december', 'january', 'february', 'march', 'april'];
+var data = {
+	months: ['november', 'december', 'january', 'february', 'march', 'april'],
+};
+
+
+//}); // Close document.ready
 /*
 var c2 = {
     'sheet': 'broncos-sacks-by-player-2016',
@@ -539,99 +543,8 @@ d3.json('output/' + c2.sheet + '.json', function(error, data) {
       .text(function(d) { return d[c2.y] + ', ' + d[c2.x]; });
 });
 
-
-// PER-SEASON SACKS
-window.onload = function() {
-    var c = {
-        'sheet': 'broncos-sacks-per-season',
-        'chart': '#season-chart',
-        'x': 'Year',
-        'y': 'Sacks',
-        'ceiling': 60 
-    };
-    var $chart = $(c.chart);
-    var aspect = { width: 12, height: 6 };
-
-    var margin = { top: 20, right: 20, bottom: 30, left: 30 },
-        width = $chart.width() - margin.left - margin.right,
-        height = 200 - margin.top - margin.bottom;
-
-    var x = d3.scale.ordinal()
-        .rangeRoundBands([5, width], .1);
-    var y = d3.scale.linear()
-        .range([height, 0]);
-
-    var x_axis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-
-    var y_axis = d3.svg.axis()
-        .scale(y)
-        .orient("left")
-        .ticks(6);
-
-    var chart = d3.select(c.chart)
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-    d3.json('output/' + c.sheet + '.json', function(error, data) {
-        data.reverse();
-        if (error) return console.warn(error);
-
-        // Tally up the sacks, see where this season's projected sacks
-        // rank among all the years.
-        sacks.seasons = data.length + 1
-        data.map(function (d, index) 
-        {
-            if ( d['Sacks'] !== "" )
-            {
-                sacks.all_time += +d['Sacks'];
-            }
-            if ( sacks.forecast >= +d['Sacks'] ) sacks.rank += 1;
-            data[index]['Year'] = ''+d['Year'].replace('19', '\'').replace('20', '\'');
-        });
-        sacks.rank = sacks.seasons - sacks.rank;
-        sacks.update_text();
-
-        x.domain(data.map(function(d) { return d[c.x] }));
-        y.domain([0, d3.max(data, function(d) { var ceiling; if ( +d[c.y] < c.ceiling ) ceiling = c.ceiling; return ceiling; })]);
-
-        chart.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(x_axis)
-            .append("text")
-            .attr("x", 10)
-            .attr("dy", "2.5em")
-            .style("text-anchor", "start")
-            .text(c.x);
-
-        chart.append("g")
-            .attr("class", "y axis")
-            .call(y_axis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(c.y);
-
-        chart.selectAll("bar")
-            .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", function(d) { return x(d[c.x]);; })
-            .attr("width", x.rangeBand())
-            .attr("y", function(d) { return y(+d[c.y]); })
-            .attr("height", function(d) { return height - y(+d[c.y]); });
-    });
-}
 */
 
-}); // close document.ready()
 </script>
     <p class="latest-news"><a target="_top" href="http://www.nydailynews.com/tags/nyc-weather">NYC WEATHER NEWS</a>: <strong id="latest-news-headline"></strong></p>
         
@@ -654,7 +567,6 @@ window.onload = function() {
         s.setAttribute('src', '//interactive.nydailynews.com/feeds/tag-nyc-weather-1.js?' + rando());
         document.getElementsByTagName('head')[0].appendChild(s);
     </script>
-    <script src="/js/d3/d3.v4.min.js" charset="utf-8"></script>
     <footer>
     <p>Copyright &copy; 2017-2018 NY Daily News</p>
     </footer>
