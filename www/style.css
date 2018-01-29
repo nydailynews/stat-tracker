@@ -10,7 +10,10 @@ h1, h2, h3 {
     width: 100%;
     max-width: 960px;
 }
-.chart rect {
+#grouped-snow-monthly {
+    width: 90%;
+}
+#yearly-snow-1869 rect, #yearly-snow-recent rect {
   fill: #6CC3FF;
 }
 
@@ -36,4 +39,4 @@ h1, h2, h3 {
 }
 .hide { display: none; }
 body { margin:0; }
-p { font: 17px/30px "PT Serif",serif; }
+p, figcaption { font: 17px/30px "PT Serif",serif; }
