@@ -17,14 +17,15 @@ h1, h2, h3 {
   fill: #6CC3FF;
 }
 
-.chart text {
+#yearly-snow-1869 text, #yearly-snow-recent text {
   fill: #666;
   font: 10px sans-serif;
   text-anchor: middle;
 }
 .axis text {
+  text-transform: capitalize; 
   font: 10px sans-serif;
-    color: #666;
+  color: #666;
 }
 
 .axis path,

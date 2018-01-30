@@ -67,7 +67,7 @@
 </figure>
 
 <h2>New York City snowfall, per year, last 30 years</h2>
-<link href="style.css" rel="stylesheet"></link>
+<link href="style.css?v1" rel="stylesheet"></link>
 <svg class="chart" id="yearly-snow-recent"></svg>
 <p>
     So far this season, we've had <span id='current-season'></span> of snow, making this the <span id='season-ranking'></span> snowiest season in the <span id='season-count'></span> seasons that records were kept.
@@ -540,6 +540,7 @@ g.append('g')
 		.attr('fill', '#000')
 		.attr('font-weight', 'bold')
 		.attr('text-anchor', 'start')
+        //.attr("transform", "rotate(-90)")
 		.text('Inches')
 
 var legend = g.append('g')
@@ -561,7 +562,7 @@ legend.append('text')
 	.attr('x', c3.width - 24)
 	.attr('y', 9.5)
 	.attr('dy', '0.32em')
-	.text(function(d) { return d; });
+	.text(function(d) { if ( d == 'average-snow' ) return 'NYC monthly average snow'; if ( d == 'current-snow' ) return 'NYC snow this season'; });
 
 }	// Close function month_chart
 
