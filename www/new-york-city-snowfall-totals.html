@@ -62,7 +62,7 @@
     Among the years that it snowed in <span id='month4' class='title'></span>, an average <span id='month-average'></span> fell those months.
 </p>
 <figure id="month-averages-chart">
-	<figcaption>This chart compares the current season's snowfall against NYC's average for that month.</figcaption>
+	<figcaption>This chart compares the current season's monthly snowfall against NYC's per-month averages.</figcaption>
 	<svg class="chart" id="grouped-snow-monthly"></svg>
 </figure>
 
@@ -475,7 +475,6 @@ c3.width = +$chart.width() - margin.left - margin.right;
 c3.height = +$chart.height() - margin.top - margin.bottom;
 var g = d3.select(c3['chart']).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-console.log('W', c3.width);
 var x0 = d3.scaleBand()
 	.rangeRound( [0, c3.width] )
 	.paddingInner(0.1);
@@ -487,13 +486,12 @@ var y = d3.scaleLinear()
 	.rangeRound( [c3.height, 0] );
 
 var z = d3.scaleOrdinal()
-	.range(['#ff0000', '#ff9999']);
+	.range(['#6CC3FF', '#bcbcbc']);
 
 // Put the data together
 var months = ['november', 'december', 'january', 'february', 'march', 'april'];
 var keys = ['current-snow', 'average-snow'];
 var data = [];
-console.log(snow);
 for ( var i = 0; i < months.length; i ++ ) {
 	var r = {};
 	r['month'] = months[i];
@@ -502,7 +500,6 @@ for ( var i = 0; i < months.length; i ++ ) {
 	data.push(r);
 }
 data['columns'] = ['month', 'current-snow', 'average-snow'];
-console.log(data);
 
 //x0.domain(months);
 x0.domain(data.map(function(d) { return d.month; }));
@@ -510,12 +507,11 @@ x1.domain(keys).rangeRound([0, x0.bandwidth()]);
 y.domain([0, 15]).nice();
 //y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
 
-console.log(g);
 g.append('g')
     .selectAll('g')
     .data(data)
 	.enter().append('g')
-		.attr('transform', function(d) { console.log(d, x0('november')); return 'translate(' + x0(d.month) + ',0)'; })
+		.attr('transform', function(d) { return 'translate(' + x0(d.month) + ',0)'; })
 	.selectAll('rect')
 	.data(function(d) { return keys.map(function(key) { return { key: key, value: d[key]}; }); })
 	.enter().append('rect')
@@ -541,7 +537,7 @@ g.append('g')
 		.attr('font-weight', 'bold')
 		.attr('text-anchor', 'start')
         //.attr("transform", "rotate(-90)")
-		.text('Inches')
+		.text(c3.y)
 
 var legend = g.append('g')
 		.attr('font-family', 'sans-serif')
@@ -562,7 +558,7 @@ legend.append('text')
 	.attr('x', c3.width - 24)
 	.attr('y', 9.5)
 	.attr('dy', '0.32em')
-	.text(function(d) { if ( d == 'average-snow' ) return 'NYC monthly average snow'; if ( d == 'current-snow' ) return 'NYC snow this season'; });
+	.text(function(d) { if ( d == 'average-snow' ) return 'NYC monthly average'; if ( d == 'current-snow' ) return 'NYC snow this month'; });
 
 }	// Close function month_chart
 
