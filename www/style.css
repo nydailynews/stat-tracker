@@ -39,5 +39,5 @@ h1, h2, h3 {
   display: none;
 }
 .hide { display: none; }
-body { margin:0; }
+body, figure { margin:0; }
 p, figcaption { font: 17px/30px "PT Serif",serif; }

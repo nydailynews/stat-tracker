@@ -3,6 +3,8 @@
 <head>
     <title>New York City Snowfall Tracker</title>
     <link rel="canonical" href="http://www.nydailynews.com/new-york/new-york-city-snowfall-total-tracker-article-1.2994206">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="utf-8" />
     <style>
         /* Only show certain tick marks on the charts */
         #yearly-snow-recent g.x g.tick { display: none; }
@@ -32,9 +34,10 @@
         }
     </style>
 
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet'>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/d3/d3.v4.min.js" charset="utf-8"></script>
+    <link href="style.css?v3" rel="stylesheet"></link>
 </head>
 <body>
     <script>
@@ -67,13 +70,13 @@
 </figure>
 
 <h2>New York City snowfall, per year, last 30 years</h2>
-<link href="style.css?v1" rel="stylesheet"></link>
 <svg class="chart" id="yearly-snow-recent"></svg>
 <p>
-    So far this season, we've had <span id='current-season'></span> of snow, making this the <span id='season-ranking'></span> snowiest season in the <span id='season-count'></span> seasons that records were kept.
+    So far this season, we’ve had <span id='current-season'></span> of snow, making this the <span id='season-ranking'></span> snowiest season in the <span id='season-count'></span> seasons that records were kept.
 </p>
 <p>
-    The seasonal average for the previous 30 years is <span id='average-30-years'></span><!--, so we're <span id='average-30-well'></span> <span id='average-30-above'></span> average so far-->.
+    The seasonal average for the previous 30 years is <span id='average-30-years'></span>,<!--, so we're <span id='average-30-well'></span> <span id='average-30-above'></span> average so far-->
+    and NYC Central Park's all-time seasonal snowfall average is <span id='average-all-time'></span>.
     <!--
     We're <span id='a-b-season'></span> average for the season, but we still have <span id='months-to-go'></span> months to go.
     -->
@@ -84,14 +87,7 @@
 <p>
     New York City's record for snow in a month: <a href="http://www.nydailynews.com/new-york/storms-dumps-20-inches-city-making-february-snowiest-month-1869-article-1.176046" target="_parent">36.9 inches, set February 2010</a>.
 </p>
-<!--
-<h2 id="snow-per-month">New York City snow averages, by month</h2>
-// Chart of snow averages by month ... could combine with chart below.
 
-<h2 id="snow-per-month">New York City snowfall, per month, 2017</h2>
-<svg class="chart" id="monthly-snow-current-year"></svg>
-
--->
 <h2 id="snow-per-year-historical">New York City snowfall, per year, since 1869</h2>
 <svg class="chart" id="yearly-snow-1869"></svg>
 <p><em>Snow data courtesy the National Weather Service</em></p>
@@ -405,6 +401,7 @@ var c2 = {
 };
 
 d3.json('output/' + c2.sheet + '.json?' + rando(), function(error, data) {
+    console.log(data);
     var $chart = $(c2.chart);
 
     var margin = { top: 20, right: 20, bottom: 30, left: 30 };
