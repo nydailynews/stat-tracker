@@ -41,3 +41,4 @@ h1, h2, h3 {
 .hide { display: none; }
 body, figure { margin:0; }
 p, figcaption { font: 17px/30px "PT Serif",serif; }
+#todays-date { text-transform: capitalize; }

@@ -37,7 +37,7 @@
     <link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet'>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/d3/d3.v4.min.js" charset="utf-8"></script>
-    <link href="style.css?v3" rel="stylesheet"></link>
+    <link href="style.css?v4" rel="stylesheet"></link>
 </head>
 <body>
     <script>
@@ -55,6 +55,14 @@
 <h1>New York City Snow Tracker</h1>
 <p id="intro"><strong>Tracking New York City's historical snowfall totals, as measured at Central Park</strong>.</p>
 <p id="latest"></p>
+<h2>This day in New York City snow</h2>
+<p>
+    New York City’s record for snow on <time id="todays-date"></time> was set in <span id="todays-record-year"></span>, when <span id="todays-record"></span> inches of snow fell.
+    <span class="hide" id="we-have-a-blurb">
+        This is the article about that snow: <a id="record-snow-link"></a>. <span id="record-snow-description"></span>
+    </span>
+</p>
+
 <h2>New York City snow, by month</h2>
 <p>
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
@@ -159,6 +167,14 @@ var snow = {
     },
     update_text: function()
     {
+
+        $('#todays-date').html(this.date_str);
+        if ( this.hasOwnProperty('records') && this.records.hasOwnProperty(this.date_slug) )
+        {
+            $('#todays-record').html(this.records[this.date_slug]['record']);
+            $('#todays-record-year').html(this.records[this.date_slug]['record-year']);
+        }
+        else {}
         $('#current-season').html(this.current['Total Inches'] + ' ' + this.get_inches(this.current['Total Inches']));
         var current_month = 0;
         if ( this.current[this.month_str] !== '' ) current_month = +this.current[this.month_str];
@@ -244,11 +260,24 @@ var snow = {
         }
         request.send();
     },
+    build_date_slug: function()
+    {
+        // Return a month-day slug such as "10-01" or "03-14"
+        // Used for looking up the snow per-day record.
+        var da = new Date();
+        var m = da.getMonth() + 1;
+        if ( m < 10 ) m = "0" + m;
+        var d = da.getDate();
+        if ( d < 10 ) d = "0" + d;
+        return m + "-" + d;
+    },
     init: function()
     {
+        var da = new Date();
         this.most_recent_text();
-
+        this.date_slug = this.build_date_slug();
         this.month_str = this.months[this.month];
+        this.date_str =  this.month_str + ' ' + da.getDate();
         this.average.year = Math.round((this.total.year/this.years)*10)/10;
         //this.forecast = this.total + Math.round(this.average*games_left);
 
@@ -278,7 +307,10 @@ var snow = {
             var median = this.monthly[mon][half];
             this.average.monthly.median[mon] = median;
         }
-        this.update_text();
+        $.getJSON('output/snowfall-nyc-record.json', function(data) {
+            snow.records = data;
+            snow.update_text();
+        });
 		if ( typeof month_chart !== 'undefined' ) month_chart();
     }
 };
