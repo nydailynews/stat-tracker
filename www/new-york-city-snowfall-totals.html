@@ -55,11 +55,18 @@
 <h1>New York City Snow Tracker</h1>
 <p id="intro"><strong>Tracking New York City's historical snowfall totals, as measured at Central Park</strong>.</p>
 <p id="latest"></p>
-<h2>This day in New York City snow</h2>
+<h2>Today in New York City snow</h2>
 <p>
     New York City’s record for snow on <time id="todays-date"></time> was set in <span id="todays-record-year"></span>, when <span id="todays-record"></span> inches of snow fell.
     <span class="hide" id="we-have-a-blurb">
         This is the article about that snow: <a id="record-snow-link"></a>. <span id="record-snow-description"></span>
+    </span>
+</p>
+<p id="latest-snow">
+    The last measurable snow in NYC fell <span id="days-ago"></span> days ago,
+    when <span id="latest-snow-depth"></span> inches of snow fell.
+    <span class="hide" id="latest-snow-blurb">
+        This is the article about that snow: <a id="latest-snow-link"></a>.
     </span>
 </p>
 
@@ -108,6 +115,7 @@ var snow = {
     forecast: 0,
     rank: 0,
     month: (new Date()).getMonth(),
+    ap_numerals: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
     months: ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'],
     monthly: {'january': [], 'february': [], 'march': [], 'april': [], 'may': [], 'june': [], 'july': [], 'august': [], 'september': [], 'october': [], 'november': [], 'december': []},
     month_str: '',
@@ -194,6 +202,7 @@ var snow = {
         $('#month-record').text(this.record.monthly[this.month_str].total + ' inches');
         $('#month-record-set').text('the ' + this.record.monthly[this.month_str].year);
         $('#average-30-years').html(this.average.year + ' ' + this.get_inches(this.average.year));
+        //$('#average-all-time').html(this.get_inches(this.average.year));
         if ( this.rank > 0 )
         {
             var rank_string = this.to_ordinal(this.rank);
@@ -255,7 +264,27 @@ var snow = {
             if ( request.status >= 200 && request.status < 400 )
             {
                 var data = JSON.parse(request.responseText);
-                var latest = data.pop();
+                var l = data.pop();
+                console.log(l);
+                // If the latest snow is today's or yesterday's we treat the sentence differently than if it was later.
+                var latest_day = new Date(l['year'], +l['month'] - 1, l['day']);
+                var today = new Date();
+                // Cribbed from https://stackoverflow.com/questions/542938/how-do-i-get-the-number-of-days-between-two-dates-in-javascript
+                var days_diff = Math.round((today-latest_day)/(1000*60*60*24));
+                console.log(days_diff)
+                if ( days_diff < 2 )
+                {
+                }
+                if ( days_diff < 11 ) days_diff = snow.ap_numerals[days_diff];
+                $('#days-ago').text(days_diff);
+                $('#latest-snow-depth').text(l['total']);
+                if ( l['url'] !== '' )
+                {
+                    $('#latest-snow-blurb').removeClass('hide');
+                    $('#latest-snow-link').attr('href', l['url']);
+                    $('#latest-snow-link').text(l['headline']);
+                }
+
             }
         }
         request.send();
