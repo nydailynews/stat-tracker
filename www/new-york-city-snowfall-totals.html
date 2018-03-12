@@ -58,7 +58,7 @@
 <h2>Today in New York City snow</h2>
 <p>
     New York City’s record for snow on <time id="todays-date"></time> was set in <span id="todays-record-year"></span>, when <span id="todays-record"></span> inches of snow fell.
-    <span class="hide" id="we-have-a-blurb">
+    <span class="hide" id="record-snow-blurb">
         This is the article about that snow: <a id="record-snow-link"></a>. <span id="record-snow-description"></span>
     </span>
 </p>
@@ -181,6 +181,13 @@ var snow = {
         {
             $('#todays-record').html(this.records[this.date_slug]['record']);
             $('#todays-record-year').html(this.records[this.date_slug]['record-year']);
+            if ( this.records[this.date_slug]['url'] !== '' )
+            {
+                $('#record-snow-blurb').removeClass('hide');
+                $('#record-snow-link').attr('href', this.records[this.date_slug]['url']);
+                $('#record-snow-link').text(this.records[this.date_slug]['headline']);
+                $('#record-snow-description').text(this.records[this.date_slug]['description']);
+            }
         }
         else {}
         $('#current-season').html(this.current['Total Inches'] + ' ' + this.get_inches(this.current['Total Inches']));
