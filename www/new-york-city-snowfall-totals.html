@@ -59,12 +59,13 @@
 <p>
     New York City’s record for snow on <time id="todays-date"></time> was set in <span id="todays-record-year"></span>, when <span id="todays-record"></span> inches of snow fell.
     <span class="hide" id="record-snow-blurb">
-        This is the article about that snow: <a target="_parent" id="record-snow-link"></a>. <span id="record-snow-description"></span>
+        This is the article about NYC’s most-recent snow: <a target="_parent" id="record-snow-link"></a>. <span id="record-snow-description"></span>
     </span>
 </p>
 <p id="latest-snow">
-    The last measurable snow in NYC fell <span id="days-ago"></span> days ago,
+    The last measurable snow in NYC fell <span id="days-ago-blurb"><span id="days-ago"></span> days ago</span>,
     when <span id="latest-snow-depth"></span> inches of snow fell.
+    <span id="day-record-blurb"></span>
     <span class="hide" id="latest-snow-blurb">
         This is the article about that snow: <a target="_parent" id="latest-snow-link"></a>.
     </span>
@@ -80,8 +81,8 @@
     Among the years that it snowed in <span id='month4' class='title'></span>, an average <span id='month-average'></span> fell those months.
 </p>
 <figure id="month-averages-chart">
-	<figcaption>This chart compares the current season's monthly snowfall against NYC's per-month averages.</figcaption>
-	<svg class="chart" id="grouped-snow-monthly"></svg>
+    <figcaption>This chart compares the current season's monthly snowfall against NYC's per-month averages.</figcaption>
+    <svg class="chart" id="grouped-snow-monthly"></svg>
 </figure>
 
 <h2>New York City snowfall, per year, last 30 years</h2>
@@ -120,7 +121,7 @@ var snow = {
     monthly: {'january': [], 'february': [], 'march': [], 'april': [], 'may': [], 'june': [], 'july': [], 'august': [], 'september': [], 'october': [], 'november': [], 'december': []},
     month_str: '',
     total: { year: 0,
-		all_years: 0,
+        all_years: 0,
         monthly: { 
             'october': 0,
             'november': 0,
@@ -220,29 +221,29 @@ var snow = {
             $("#in-the-number-of-years").html(', in the ' + this.seasons + ' years the NFL has tracked that statistic, ');
         }
     },
-	season_ranking: function(total) {
-		// Given a total for a season's snow, determine its ranking.
-		// Returns the ranking
+    season_ranking: function(total) {
+        // Given a total for a season's snow, determine its ranking.
+        // Returns the ranking
         if ( total == 0 ) return this.to_ordinal(this.yearly.length) + '-most';
 
         var index = this.yearly.indexOf(total);
         if ( index === 0 ) return 'most';
         return this.to_ordinal(index) + '-most';
-	},
-	month_ranking: function(m) {
-		// Given a month, figure out where this year's snowfall for that month ranks.
-		// Returns the ranking
+    },
+    month_ranking: function(m) {
+        // Given a month, figure out where this year's snowfall for that month ranks.
+        // Returns the ranking
         if ( this.current[m] == 0 ) return this.to_ordinal(this.monthly[m].length) + '-most';
         var index = this.monthly[m].indexOf(+this.current[m]);
         if ( index === 0 ) return 'most';
         return this.to_ordinal(index) + '-most';
-	},
-	month_average: function(m) {
-		// Given a month ("december"), figure out where this year's snowfall for that month ranks.
-		// Returns the ranking
-		var values = this.monthly[m];
+    },
+    month_average: function(m) {
+        // Given a month ("december"), figure out where this year's snowfall for that month ranks.
+        // Returns the ranking
+        var values = this.monthly[m];
         var sum = values.reduce((previous, current) => current += previous);
-		return Math.round(sum / values.length * 10) / 10;
+        return Math.round(sum / values.length * 10) / 10;
     },
     evaluate_season: function()
     {
@@ -262,7 +263,7 @@ var snow = {
         }
         return i + "th";
     },
-	most_recent_text: function()
+    most_recent_text: function()
     {
         // Download the most-recent json file, populate the lead graf if it's a recent / big snow.
         var request = new XMLHttpRequest();
@@ -274,23 +275,54 @@ var snow = {
                 var data = JSON.parse(request.responseText);
                 var l = data.pop();
                 console.log(l);
-                // If the latest snow is today's or yesterday's we treat the sentence differently than if it was later.
+                // Cribbed from https://stackoverflow.com/questions/542938/how-do-i-get-the-number-of-days-between-two-dates-in-javascript
                 var latest_day = new Date(l['year'], +l['month'] - 1, l['day']);
                 var today = new Date();
-                // Cribbed from https://stackoverflow.com/questions/542938/how-do-i-get-the-number-of-days-between-two-dates-in-javascript
-                var days_diff = Math.round((today-latest_day)/(1000*60*60*24));
+                var days_diff = Math.floor((today-latest_day)/(1000*60*60*24));
                 console.log(days_diff)
-                if ( days_diff < 2 )
+
+                // If the latest snow is today's or yesterday's we treat the sentence differently than if it was later.
+                if ( days_diff === 0 )
                 {
+                    document.getElementById('days-ago-blurb').textContent = 'today';
                 }
-                if ( days_diff < 11 ) days_diff = snow.ap_numerals[days_diff];
-                $('#days-ago').text(days_diff);
-                $('#latest-snow-depth').text(l['total']);
+                else if ( days_diff === 1 )
+                {
+                    document.getElementById('days-ago-blurb').textContent = 'yesterday';
+                }
+                else
+                {
+                    if ( days_diff < 11 ) days_diff = snow.ap_numerals[days_diff];
+                    document.getElementById('days-ago').textContent = days_diff;
+                }
+                document.getElementById('latest-snow-depth').textContent = l['total'];
                 if ( l['url'] !== '' )
                 {
                     $('#latest-snow-blurb').removeClass('hide');
                     $('#latest-snow-link').attr('href', l['url']);
                     $('#latest-snow-link').text(l['headline']);
+                }
+
+                // Build the blurb about how far away from the record we were on the latest snow.
+                var drb = document.getElementById('day-record-blurb');
+                var day_str = l['day'];
+                if ( +l['day'] < 10 ) day_str = '0' + l['day'];
+                var mon_str = '' + +l['month'] - 1;
+                if ( mon_str < 10 ) mon_str = '0' + mon_str;
+                var day_mon = mon_str + '-' + day_str;
+                var that_days_record = snow.records[day_mon];
+
+                var snow_diff = +that_days_record['record'] - +l['total'];
+                var that_days = 'that days';
+                if ( days_diff === 0 ) that_days = 'todays'; 
+                else if ( days_diff === 1 ) that_days = 'yesterdays'; 
+                if ( snow_diff > 0 )
+                {
+                    drb.textContent = 'That’s ' + snow_diff + ' inches short of ' + that_days + ' record, set in ' + that_days_record['record-year'] + ', when ' + that_days_record['record'] + ' inches of snow fell.';
+                }
+                else if ( snow_diff < 0 )
+                {
+                    drb.textContent = '🚨🚨 That’s a new record snow total for 🚨🚨';
                 }
 
             }
@@ -310,30 +342,34 @@ var snow = {
     },
     init: function()
     {
+        $.getJSON('output/snowfall-nyc-record.json', function(data) {
+            snow.records = data;
+            snow.most_recent_text();
+            snow.update_text();
+        });
         var da = new Date();
-        this.most_recent_text();
         this.date_slug = this.build_date_slug();
         this.month_str = this.months[this.month];
         this.date_str =  this.month_str + ' ' + da.getDate();
         this.average.year = Math.round((this.total.year/this.years)*10)/10;
-		this.average.all_years = Math.round((this.total.all_years/(this.data.length -1))*10)/10;
+        this.average.all_years = Math.round((this.total.all_years/(this.data.length -1))*10)/10;
         //this.forecast = this.total + Math.round(this.average*games_left);
 
-		// Index the snowfall by month
-		var l = this.data.length;
-		for ( var i = 0; i < l; i ++ ) {
+        // Index the snowfall by month
+        var l = this.data.length;
+        for ( var i = 0; i < l; i ++ ) {
             for ( var m = 0; m < 12; m ++ ) {
                 var mon = this.months[m];
                 var tot = +this.data[i][mon];
                 if ( tot > 0 ) this.monthly[mon].push(+this.data[i][mon]);
             }
-		}
+        }
         
         // Put the year's totals in a sorted array
         this.yearly = snow.data.map(function (record) { return +record["Total Inches"] });
         this.yearly.sort(function (a, b) { return b-a; });
 
-		// AVERAGES: MONTHLY
+        // AVERAGES: MONTHLY
         // Sort the month's totals. Also build the averages: mean and median.
         for ( var m = 0; m < 12; m ++ ) {
             var mon = this.months[m];
@@ -346,11 +382,7 @@ var snow = {
             var median = this.monthly[mon][half];
             this.average.monthly.median[mon] = median;
         }
-        $.getJSON('output/snowfall-nyc-record.json', function(data) {
-            snow.records = data;
-            snow.update_text();
-        });
-		if ( typeof month_chart !== 'undefined' ) month_chart();
+        if ( typeof month_chart !== 'undefined' ) month_chart();
     }
 };
 
@@ -400,11 +432,11 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
     snow.data = data;
     snow.current = data[data.length-1];
 
-	// Before we slice the data to the last 30 years, get a total for all years except this one.
+    // Before we slice the data to the last 30 years, get a total for all years except this one.
     data.slice(0, -1).map(function (d, index) 
     {
         if ( d[c.y] !== "" ) snow.total.all_years += +d[c.y];
-	});
+    });
 
     data = data.slice(Math.max(data.length-31, 1))
     // We do not want to factor the current year in the averages.
@@ -545,34 +577,34 @@ var c3 = {
 };
 function month_chart() {
 var $chart = $(c3.chart),
-	margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    margin = { top: 20, right: 20, bottom: 30, left: 30 };
 c3.width = +$chart.width() - margin.left - margin.right;
 c3.height = +$chart.height() - margin.top - margin.bottom;
 var g = d3.select(c3['chart']).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 var x0 = d3.scaleBand()
-	.rangeRound( [0, c3.width] )
-	.paddingInner(0.1);
+    .rangeRound( [0, c3.width] )
+    .paddingInner(0.1);
 
 var x1 = d3.scaleBand()
-	.padding(0.05);
+    .padding(0.05);
 
 var y = d3.scaleLinear()
-	.rangeRound( [c3.height, 0] );
+    .rangeRound( [c3.height, 0] );
 
 var z = d3.scaleOrdinal()
-	.range(['#6CC3FF', '#bcbcbc']);
+    .range(['#6CC3FF', '#bcbcbc']);
 
 // Put the data together
 var months = ['november', 'december', 'january', 'february', 'march', 'april'];
 var keys = ['current-snow', 'average-snow'];
 var data = [];
 for ( var i = 0; i < months.length; i ++ ) {
-	var r = {};
-	r['month'] = months[i];
-	r['current-snow'] = snow['current'][months[i]];
-	r['average-snow'] = snow['average']['monthly']['mean'][months[i]];
-	data.push(r);
+    var r = {};
+    r['month'] = months[i];
+    r['current-snow'] = snow['current'][months[i]];
+    r['average-snow'] = snow['average']['monthly']['mean'][months[i]];
+    data.push(r);
 }
 data['columns'] = ['month', 'current-snow', 'average-snow'];
 
@@ -585,57 +617,57 @@ y.domain([0, 15]).nice();
 g.append('g')
     .selectAll('g')
     .data(data)
-	.enter().append('g')
-		.attr('transform', function(d) { return 'translate(' + x0(d.month) + ',0)'; })
-	.selectAll('rect')
-	.data(function(d) { return keys.map(function(key) { return { key: key, value: d[key]}; }); })
-	.enter().append('rect')
-		.attr('x', function(d) { return x1(d.key); })
-		.attr('y', function(d) { return y(d.value); })
-		.attr('width', x1.bandwidth())
-		.attr('height', function(d) { return c3.height - y(d.value); })
-		.attr('fill', function(d) { return z(d.key); });
+    .enter().append('g')
+        .attr('transform', function(d) { return 'translate(' + x0(d.month) + ',0)'; })
+    .selectAll('rect')
+    .data(function(d) { return keys.map(function(key) { return { key: key, value: d[key]}; }); })
+    .enter().append('rect')
+        .attr('x', function(d) { return x1(d.key); })
+        .attr('y', function(d) { return y(d.value); })
+        .attr('width', x1.bandwidth())
+        .attr('height', function(d) { return c3.height - y(d.value); })
+        .attr('fill', function(d) { return z(d.key); });
 
 g.append('g')
-	.attr('class', 'axis')
-	.attr('transform', 'translate(0,' + c3.height + ')')
-	.call(d3.axisBottom(x0));
+    .attr('class', 'axis')
+    .attr('transform', 'translate(0,' + c3.height + ')')
+    .call(d3.axisBottom(x0));
 
 g.append('g')
-		.attr('class', 'axis')
-		.call(d3.axisLeft(y).ticks(null, 's'))
-	.append('text')
-		.attr('x', 2)
-		.attr('y', y(y.ticks().pop()) + 0.5)
-		.attr('dy', '0.32em')
-		.attr('fill', '#000')
-		.attr('font-weight', 'bold')
-		.attr('text-anchor', 'start')
+        .attr('class', 'axis')
+        .call(d3.axisLeft(y).ticks(null, 's'))
+    .append('text')
+        .attr('x', 2)
+        .attr('y', y(y.ticks().pop()) + 0.5)
+        .attr('dy', '0.32em')
+        .attr('fill', '#000')
+        .attr('font-weight', 'bold')
+        .attr('text-anchor', 'start')
         //.attr("transform", "rotate(-90)")
-		.text(c3.y)
+        .text(c3.y)
 
 var legend = g.append('g')
-		.attr('font-family', 'sans-serif')
-		.attr('font-size', 12)
-		.attr('text-anchor', 'end')
-	.selectAll('g')
-	.data(keys.slice().reverse())
-	.enter().append('g')
-		.attr('transform', function(d, i) { return 'translate(0,' + i * 20 + ')'; });
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', 12)
+        .attr('text-anchor', 'end')
+    .selectAll('g')
+    .data(keys.slice().reverse())
+    .enter().append('g')
+        .attr('transform', function(d, i) { return 'translate(0,' + i * 20 + ')'; });
 
 legend.append('rect')
-	.attr('x', c3.width-19)
-	.attr('width', 19)
-	.attr('height', 19)
-	.attr('fill', z)
+    .attr('x', c3.width-19)
+    .attr('width', 19)
+    .attr('height', 19)
+    .attr('fill', z)
 
 legend.append('text')
-	.attr('x', c3.width - 24)
-	.attr('y', 9.5)
-	.attr('dy', '0.32em')
-	.text(function(d) { if ( d == 'average-snow' ) return 'NYC monthly average'; if ( d == 'current-snow' ) return 'NYC snow this month'; });
+    .attr('x', c3.width - 24)
+    .attr('y', 9.5)
+    .attr('dy', '0.32em')
+    .text(function(d) { if ( d == 'average-snow' ) return 'NYC monthly average'; if ( d == 'current-snow' ) return 'NYC snow this month'; });
 
-}	// Close function month_chart
+}   // Close function month_chart
 
 //}); // Close document.ready
 /*
