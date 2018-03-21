@@ -59,7 +59,7 @@
 <p>
     New York City’s record for snow on <time id="todays-date"></time> was set in <span id="todays-record-year"></span>, when <span id="todays-record"></span> inches of snow fell.
     <span class="hide" id="record-snow-blurb">
-        This is the article about NYC’s most-recent snow: <a target="_parent" id="record-snow-link"></a>. <span id="record-snow-description"></span>
+        This is the article about that snow: <a target="_parent" id="record-snow-link"></a>. <span id="record-snow-description"></span>
     </span>
 </p>
 <p id="latest-snow">
@@ -67,7 +67,7 @@
     when <span id="latest-snow-depth"></span> inches of snow fell.
     <span id="day-record-blurb"></span>
     <span class="hide" id="latest-snow-blurb">
-        This is the article about that snow: <a target="_parent" id="latest-snow-link"></a>.
+        This is the article about NYC’s most-recent snow: <a target="_parent" id="latest-snow-link"></a>.
     </span>
 </p>
 
@@ -178,7 +178,7 @@ var snow = {
     update_text: function()
     {
 
-        $('#todays-date').html(this.date_str);
+        document.getElementById('todays-date').textContent = this.date_str;
         if ( this.hasOwnProperty('records') && this.records.hasOwnProperty(this.date_slug) )
         {
             $('#todays-record').html(this.records[this.date_slug]['record']);
@@ -192,26 +192,27 @@ var snow = {
             }
         }
         else {}
-        $('#current-season').html(this.current['Total Inches'] + ' ' + this.get_inches(this.current['Total Inches']));
+        document.getElementById('current-season').textContent = this.current['Total Inches'] + ' ' + this.get_inches(this.current['Total Inches']);
         var current_month = 0;
         if ( this.current[this.month_str] !== '' ) current_month = +this.current[this.month_str];
 
-        $('#current-month').text(current_month + ' ' + this.get_inches(current_month));
+        document.getElementById('current-month').textContent = current_month + ' ' + this.get_inches(current_month);
 
-        $('#season-ranking').text(this.season_ranking(+this.current['Total Inches']));
-        $('#season-count').text(this.data.length);
+        document.getElementById('season-ranking').textContent = this.season_ranking(+this.current['Total Inches']);
+        document.getElementById('season-count').textContent = this.data.length;
 
         // Logic to rewrite the sentence that compares this season to this month's snowfall
         //if ( this.current['Total Inches'] == this.current[this.month_str] ) $('#season-month-overlap').text();
 
-        $('#month-ranking').text(this.month_ranking(this.month_str));
-        $('#months-with-snow').text(this.monthly[this.month_str].length);
+        document.getElementById('month-ranking').textContent = this.month_ranking(this.month_str);
+        document.getElementById('months-with-snow').textContent = this.monthly[this.month_str].length;
         $('#month1, #month2, #month3, #month4').text(this.month_str);
-        $('#month-average').text(this.month_average(this.month_str) + ' inches');
-        $('#month-record').text(this.record.monthly[this.month_str].total + ' inches');
-        $('#month-record-set').text('the ' + this.record.monthly[this.month_str].year);
-        $('#average-30-years').html(this.average.year + ' ' + this.get_inches(this.average.year));
-        $('#average-all-time').html(this.average.all_years + ' ' + this.get_inches(this.average.all_years));
+        document.getElementById('month-average').textContent = this.month_average(this.month_str) + ' inches';
+        document.getElementById('month-record').textContent = this.record.monthly[this.month_str].total + ' inches';
+        document.getElementById('month-record-set').textContent = 'the ' + this.record.monthly[this.month_str].year;
+        document.getElementById('average-30-years').textContent = this.average.year + ' ' + this.get_inches(this.average.year);
+        document.getElementById('average-all-time').textContent = this.average.all_years + ' ' + this.get_inches(this.average.all_years);
+        /*
         if ( this.rank > 0 )
         {
             var rank_string = this.to_ordinal(this.rank);
@@ -220,6 +221,7 @@ var snow = {
             $("#season-ranking").html('<strong>If the Broncos do end up with ' + this.forecast + ' sacks,</strong> that will be the ' + rank_string + 'best season for sacks the defense has had.');
             $("#in-the-number-of-years").html(', in the ' + this.seasons + ' years the NFL has tracked that statistic, ');
         }
+        */
     },
     season_ranking: function(total) {
         // Given a total for a season's snow, determine its ranking.
