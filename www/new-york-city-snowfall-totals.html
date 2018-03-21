@@ -67,7 +67,7 @@
     when <span id='latest-snow-depth'></span> inches of snow fell.
     <span id='day-record-blurb'></span>
     <span class='hide' id='latest-snow-blurb'>
-        This is the article about NYC’s most-recent recorded snow: <a target='_parent' id='latest-snow-link'></a>.
+        This is the article about <span id='latest-snow-day-label'>NYC’s most-recent recorded</span> snow: <a target='_parent' id='latest-snow-link'></a>.
     </span>
 </p>
 
@@ -285,16 +285,17 @@ var snow = {
                 var latest_day = new Date(l['year'], +l['month'] - 1, l['day']);
                 var today = new Date();
                 var days_diff = Math.floor((today-latest_day)/(1000*60*60*24));
-                console.log(days_diff)
 
                 // If the latest snow is today's or yesterday's we treat the sentence differently than if it was later.
                 if ( days_diff === 0 )
                 {
                     document.getElementById('days-ago-blurb').textContent = 'today';
+                    document.getElementById('latest-snow-day-label').textContent = 'today’s';
                 }
                 else if ( days_diff === 1 )
                 {
                     document.getElementById('days-ago-blurb').textContent = 'yesterday';
+                    document.getElementById('latest-snow-day-label').textContent = 'yesterday’s';
                 }
                 else
                 {
@@ -313,22 +314,24 @@ var snow = {
                 var drb = document.getElementById('day-record-blurb');
                 var day_str = l['day'];
                 if ( +l['day'] < 10 ) day_str = '0' + l['day'];
-                var mon_str = '' + +l['month'] - 1;
+                var mon_str = '' + +l['month'];
                 if ( mon_str < 10 ) mon_str = '0' + mon_str;
                 var day_mon = mon_str + '-' + day_str;
                 var that_days_record = snow.records[day_mon];
+                console.log(day_mon, snow.records[day_mon]);
 
                 var snow_diff = +that_days_record['record'] - +l['total'];
-                var that_days = 'that days';
-                if ( days_diff === 0 ) that_days = 'todays'; 
-                else if ( days_diff === 1 ) that_days = 'yesterdays'; 
+                var that_days = 'that day’s';
+                if ( days_diff === 0 ) that_days = 'today’s'; 
+                else if ( days_diff === 1 ) that_days = 'yesterday’s'; 
                 if ( snow_diff > 0 )
                 {
-                    drb.textContent = 'That’s ' + snow_diff + ' inches short of ' + that_days + ' record, set in ' + that_days_record['record-year'] + ', when ' + that_days_record['record'] + ' inches of snow fell.';
+                    if ( days_diff === 0 ) drb.textContent = 'That’s ' + snow_diff + ' inches short of ' + that_days + ' record.';
+                    else drb.textContent = 'That’s ' + snow_diff + ' inches short of ' + that_days + ' record, set in ' + that_days_record['record-year'] + ', when ' + that_days_record['record'] + ' inches of snow fell.';
                 }
                 else if ( snow_diff < 0 )
                 {
-                    drb.textContent = '🚨🚨 That’s a new record snow total for 🚨🚨';
+                    drb.textContent = '🚨🚨 That’s a new record snow total for . 🚨🚨';
                 }
 
             }
