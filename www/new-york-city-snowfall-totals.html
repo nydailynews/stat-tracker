@@ -59,14 +59,14 @@
 <p>
     New York City’s record for snow on <time id="todays-date"></time> was set in <span id="todays-record-year"></span>, when <span id="todays-record"></span> inches of snow fell.
     <span class="hide" id="record-snow-blurb">
-        This is the article about that snow: <a id="record-snow-link"></a>. <span id="record-snow-description"></span>
+        This is the article about that snow: <a target="_parent" id="record-snow-link"></a>. <span id="record-snow-description"></span>
     </span>
 </p>
 <p id="latest-snow">
     The last measurable snow in NYC fell <span id="days-ago"></span> days ago,
     when <span id="latest-snow-depth"></span> inches of snow fell.
     <span class="hide" id="latest-snow-blurb">
-        This is the article about that snow: <a id="latest-snow-link"></a>.
+        This is the article about that snow: <a target="_parent" id="latest-snow-link"></a>.
     </span>
 </p>
 
@@ -119,8 +119,9 @@ var snow = {
     months: ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'],
     monthly: {'january': [], 'february': [], 'march': [], 'april': [], 'may': [], 'june': [], 'july': [], 'august': [], 'september': [], 'october': [], 'november': [], 'december': []},
     month_str: '',
-    'total': { 'year': 0,
-        'monthly': { 
+    total: { year: 0,
+		all_years: 0,
+        monthly: { 
             'october': 0,
             'november': 0,
             'december': 0,
@@ -131,8 +132,8 @@ var snow = {
             'may': 0
         }
     },
-    'average': { 'year': 0,
-        'monthly': {
+    average: { 'year': 0,
+        monthly: {
             mean: { 
             'october': 0,
             'november': 0,
@@ -209,7 +210,7 @@ var snow = {
         $('#month-record').text(this.record.monthly[this.month_str].total + ' inches');
         $('#month-record-set').text('the ' + this.record.monthly[this.month_str].year);
         $('#average-30-years').html(this.average.year + ' ' + this.get_inches(this.average.year));
-        //$('#average-all-time').html(this.get_inches(this.average.year));
+        $('#average-all-time').html(this.average.all_years + ' ' + this.get_inches(this.average.all_years));
         if ( this.rank > 0 )
         {
             var rank_string = this.to_ordinal(this.rank);
@@ -315,6 +316,7 @@ var snow = {
         this.month_str = this.months[this.month];
         this.date_str =  this.month_str + ' ' + da.getDate();
         this.average.year = Math.round((this.total.year/this.years)*10)/10;
+		this.average.all_years = Math.round((this.total.all_years/(this.data.length -1))*10)/10;
         //this.forecast = this.total + Math.round(this.average*games_left);
 
 		// Index the snowfall by month
@@ -331,6 +333,7 @@ var snow = {
         this.yearly = snow.data.map(function (record) { return +record["Total Inches"] });
         this.yearly.sort(function (a, b) { return b-a; });
 
+		// AVERAGES: MONTHLY
         // Sort the month's totals. Also build the averages: mean and median.
         for ( var m = 0; m < 12; m ++ ) {
             var mon = this.months[m];
@@ -396,6 +399,13 @@ d3.json('output/' + c.sheet + '.json?' + rando(), function(error, data) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     snow.data = data;
     snow.current = data[data.length-1];
+
+	// Before we slice the data to the last 30 years, get a total for all years except this one.
+    data.slice(0, -1).map(function (d, index) 
+    {
+        if ( d[c.y] !== "" ) snow.total.all_years += +d[c.y];
+	});
+
     data = data.slice(Math.max(data.length-31, 1))
     // We do not want to factor the current year in the averages.
     var this_year = data.pop();
