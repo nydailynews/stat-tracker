@@ -324,7 +324,7 @@ var snow = {
                 var that_days_record = snow.records[day_mon];
                 console.log(day_mon, snow.records[day_mon]);
 
-                var snow_diff = +that_days_record['record'] - +l['total'];
+                var snow_diff = Math.round((+that_days_record['record'] - +l['total'])*10)/10;
                 var that_days_date = new Date(snow.months[+l['month'] - 1] + ' ' + +l['day']);
                 var that_days = 'the ' + snow.build_date_str(that_days_date).capitalize(); 
                 if ( snow_diff > 0 )
