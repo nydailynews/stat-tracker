@@ -118,6 +118,8 @@ var snow = {
     month: (new Date()).getMonth(),
     ap_numerals: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
     months: ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'],
+    months_reverse: {january: '01', february: '02', march: '03', april: '04', may: '05', june: '06', july: '07', august: '08', september: '09', october: '10', november: '11', december: '12' },
+    season_months: ['october', 'november', 'december', 'january', 'february', 'march', 'april'],
     monthly: {'january': [], 'february': [], 'march': [], 'april': [], 'may': [], 'june': [], 'july': [], 'august': [], 'september': [], 'october': [], 'november': [], 'december': []},
     month_str: '',
     total: { year: 0,
@@ -157,16 +159,16 @@ var snow = {
             }
         }
     },
-    'record': { 
-        'year': { 'year': '1995-96', 'total': 75.6 },
-        'monthly': { 
-            'october': { 'year': '2011-12', 'total': 2.9 },
-            'november': { 'year': '1898-99', 'total': 19 },
-            'december': { 'year': '1947-48', 'total': 29.6 },
-            'january': { 'year': '2010-11', 'total': 36 },
-            'february': { 'year': '2009-10', 'total': 36.9 },
-            'march': { 'year': '1895-96', 'total': 30.5 },
-            'april': { 'year': '1874-75', 'total': 13.5 },
+    record: { 
+        year: { 'year': '1995-96', 'total': 75.6 },
+        monthly: { 
+            october: { 'year': '2011-12', 'total': 2.9, day: {} },
+            november: { 'year': '1898-99', 'total': 19, day: {} },
+            december: { 'year': '1947-48', 'total': 29.6, day: {} },
+            january: { 'year': '2010-11', 'total': 36, day: {} },
+            february: { 'year': '2009-10', 'total': 36.9, day: {} },
+            march: { 'year': '1895-96', 'total': 30.5, day: {} },
+            april: { 'year': '1874-75', 'total': 13.5, day: {} },
         }
     },   
     get_inches: function(total)
@@ -344,10 +346,28 @@ var snow = {
         if ( d < 10 ) d = "0" + d;
         return m + "-" + d;
     },
+    monthly_mosts: function() {
+        // Calculate the most snow that has fallen on any one day in a given month.
+        // Store that record in the snow.record.monthly[month] object.
+        var l = this.season_months.length;
+        this.season_months.map(function(month) { 
+            month_number = snow.months_reverse[month];
+            // Loop through the snow.records, which holds the daily records.
+            // The keys of .records are 'MM-DD', so when the 'MM' matches the month we're on,
+            // we look at the snow value in that item and see if it's greater than the value we had for that month.
+            var keys = Object.keys(snow.records).filter(function(key) { return key.indexOf(month_number + '-') >= 0; });
+            keys.map(function(monthday) {
+                if ( +snow.records[monthday]['record'] > snow.record.monthly[month]['day']['record'] ) {
+                    snow.record.monthly[month]['day'] = { record: +snow.records[monthday]['record'], date: snow.records[monthday]['record-year'] + '-' + monthday };
+                }
+            });
+        });   
+    },
     init: function()
     {
         $.getJSON('output/snowfall-nyc-record.json', function(data) {
             snow.records = data;
+            snow.monthly_mosts();
             snow.most_recent_text();
             snow.update_text();
         });
@@ -515,7 +535,7 @@ var c2 = {
 };
 
 d3.json('output/' + c2.sheet + '.json?' + rando(), function(error, data) {
-    console.log(data);
+    //console.log(data);
     var $chart = $(c2.chart);
 
     var margin = { top: 20, right: 20, bottom: 30, left: 30 };
