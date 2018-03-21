@@ -109,6 +109,9 @@
 <p><em>Snow data courtesy the National Weather Service</em></p>
 
 <script>
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
 var snow = {
     years: 0,
     all_time: 0,
@@ -290,7 +293,7 @@ var snow = {
                 if ( days_diff === 0 )
                 {
                     document.getElementById('days-ago-blurb').textContent = 'today:';
-                    document.getElementById('latest-snow-depth-blurb').textContent = l['total'] + ' inches have fallen so far';
+                    document.getElementById('latest-snow-depth-blurb').textContent = l['total'] + ' inches at last measure';
                     document.getElementById('latest-snow-day-label').textContent = 'today’s';
                 }
                 else if ( days_diff === 1 )
@@ -322,9 +325,8 @@ var snow = {
                 console.log(day_mon, snow.records[day_mon]);
 
                 var snow_diff = +that_days_record['record'] - +l['total'];
-                var that_days = 'that day’s';
-                if ( days_diff === 0 ) that_days = 'today’s'; 
-                else if ( days_diff === 1 ) that_days = 'yesterday’s'; 
+                var that_days_date = new Date(snow.months[+l['month'] - 1] + ' ' + +l['day']);
+                var that_days = 'the ' + snow.build_date_str(that_days_date).capitalize(); 
                 if ( snow_diff > 0 )
                 {
                     if ( days_diff === 0 ) drb.textContent = 'That’s ' + snow_diff + ' inches short of ' + that_days + ' record.';
