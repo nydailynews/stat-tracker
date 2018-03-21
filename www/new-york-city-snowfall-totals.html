@@ -67,7 +67,7 @@
     when <span id="latest-snow-depth"></span> inches of snow fell.
     <span id="day-record-blurb"></span>
     <span class="hide" id="latest-snow-blurb">
-        This is the article about NYC’s most-recent snow: <a target="_parent" id="latest-snow-link"></a>.
+        This is the article about NYC’s most-recent recorded snow: <a target="_parent" id="latest-snow-link"></a>.
     </span>
 </p>
 
@@ -223,7 +223,8 @@ var snow = {
         }
         */
     },
-    season_ranking: function(total) {
+    season_ranking: function(total)
+    {
         // Given a total for a season's snow, determine its ranking.
         // Returns the ranking
         if ( total == 0 ) return this.to_ordinal(this.yearly.length) + '-most';
@@ -232,7 +233,8 @@ var snow = {
         if ( index === 0 ) return 'most';
         return this.to_ordinal(index) + '-most';
     },
-    month_ranking: function(m) {
+    month_ranking: function(m)
+    {
         // Given a month, figure out where this year's snowfall for that month ranks.
         // Returns the ranking
         if ( this.current[m] == 0 ) return this.to_ordinal(this.monthly[m].length) + '-most';
