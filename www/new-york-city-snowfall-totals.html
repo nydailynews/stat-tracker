@@ -349,7 +349,8 @@ var snow = {
         if ( d < 10 ) d = "0" + d;
         return m + "-" + d;
     },
-    monthly_mosts: function() {
+    monthly_mosts: function()
+    {
         // Calculate the most snow that has fallen on any one day in a given month.
         // Store that record in the snow.record.monthly[month] object.
         var l = this.season_months.length;
@@ -366,6 +367,14 @@ var snow = {
             });
         });   
     },
+    build_date_str: function(da)
+    {
+        // Return a date such as "February 13".
+        // If no parameters are passed defaults to the current month/day.
+        if ( da == null ) da = new Date();
+        this.month_str = this.months[this.month];
+        return this.month_str + ' ' + da.getDate();
+    },
     init: function()
     {
         $.getJSON('output/snowfall-nyc-record.json', function(data) {
@@ -376,11 +385,9 @@ var snow = {
         });
         var da = new Date();
         this.date_slug = this.build_date_slug();
-        this.month_str = this.months[this.month];
-        this.date_str =  this.month_str + ' ' + da.getDate();
+        this.date_str = this.build_date_str();
         this.average.year = Math.round((this.total.year/this.years)*10)/10;
         this.average.all_years = Math.round((this.total.all_years/(this.data.length -1))*10)/10;
-        //this.forecast = this.total + Math.round(this.average*games_left);
 
         // Index the snowfall by month
         var l = this.data.length;
