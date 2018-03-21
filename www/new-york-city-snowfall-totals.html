@@ -63,8 +63,8 @@
     </span>
 </p>
 <p id="latest-snow">
-    The last measurable snow in NYC fell <span id='days-ago-blurb'><span id='days-ago'></span> days ago</span>,
-    when <span id='latest-snow-depth'></span> inches of snow fell.
+    The last measurable snow in NYC fell <span id='days-ago-blurb'><span id='days-ago'></span> days ago,</span>
+    <span id='latest-snow-depth-blurb'>when <span id='latest-snow-depth'></span> inches of snow fell</span>.
     <span id='day-record-blurb'></span>
     <span class='hide' id='latest-snow-blurb'>
         This is the article about <span id='latest-snow-day-label'>NYC’s most-recent recorded</span> snow: <a target='_parent' id='latest-snow-link'></a>.
@@ -289,7 +289,8 @@ var snow = {
                 // If the latest snow is today's or yesterday's we treat the sentence differently than if it was later.
                 if ( days_diff === 0 )
                 {
-                    document.getElementById('days-ago-blurb').textContent = 'today';
+                    document.getElementById('days-ago-blurb').textContent = 'today:';
+                    document.getElementById('latest-snow-depth-blurb').textContent = l['total'] + ' inches have fallen so far';
                     document.getElementById('latest-snow-day-label').textContent = 'today’s';
                 }
                 else if ( days_diff === 1 )
@@ -302,7 +303,7 @@ var snow = {
                     if ( days_diff < 11 ) days_diff = snow.ap_numerals[days_diff];
                     document.getElementById('days-ago').textContent = days_diff;
                 }
-                document.getElementById('latest-snow-depth').textContent = l['total'];
+                if ( document.getElementById('latest-snow-depth') !== null ) document.getElementById('latest-snow-depth').textContent = l['total'];
                 if ( l['url'] !== '' )
                 {
                     $('#latest-snow-blurb').removeClass('hide');
@@ -367,13 +368,13 @@ var snow = {
             });
         });   
     },
-    build_date_str: function(da)
+    build_date_str: function(date)
     {
         // Return a date such as "February 13".
         // If no parameters are passed defaults to the current month/day.
-        if ( da == null ) da = new Date();
+        if ( date == null ) date = new Date();
         this.month_str = this.months[this.month];
-        return this.month_str + ' ' + da.getDate();
+        return this.month_str + ' ' + date.getDate();
     },
     init: function()
     {
@@ -383,7 +384,6 @@ var snow = {
             snow.most_recent_text();
             snow.update_text();
         });
-        var da = new Date();
         this.date_slug = this.build_date_slug();
         this.date_str = this.build_date_str();
         this.average.year = Math.round((this.total.year/this.years)*10)/10;
