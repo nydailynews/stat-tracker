@@ -74,10 +74,15 @@
 <h2>New York City snow, by month</h2>
 <p>
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
-    So far this month, <span id='current-month'></span> of snow fell, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (of the <span id='months-with-snow'></span> <span id='month3' class='title'></span> months with measurable snowfall).
+    In the <span id='month-snow-count'></span> it has measurably snowed this month,
+    <span id='current-month'></span> of snow fell, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (of the <span id='months-with-snow'></span> <span id='month3' class='title'></span> months with measurable snowfall).
+    The last time it snowed this much in <span id='the-month-is'></span> was in <span id='the-year-was'></span>, when it snowed <span id='the-snow-was'></span>.
 </p>
 <p>
     The record for <span id='month2' class='title'></span> snowfall is <span id='month-record'></span>, set in <span id='month-record-set'></span> season.
+    We’re <span id='inches-to-monthly-record'></span> inches short of that record.
+</p>
+<p>
     Among the years that it snowed in <span id='month4' class='title'></span>, an average <span id='month-average'></span> fell those months.
 </p>
 <figure id='month-averages-chart'>
@@ -238,6 +243,20 @@ var snow = {
         if ( index === 0 ) return 'most';
         return this.to_ordinal(index) + '-most';
     },
+    get_month_count: function(data, day)
+    {
+        // Get the number of times it has snowed in a given month.
+        // Uses the snowfall-nyc-daily.json data.
+        var c = 0;
+        var l = data.length;
+        var m = day.getMonth() + 1;
+        var y = day.getYear();
+        for ( var i = 0; i < l; i ++ )
+        {
+           if ( y === +data[i]['year'] && m === +data[i]['month'] ) c += 1;
+        }
+        return c;
+    },
     month_ranking: function(m)
     {
         // Given a month, figure out where this year's snowfall for that month ranks.
@@ -282,13 +301,18 @@ var snow = {
             if ( request.status >= 200 && request.status < 400 )
             {
                 var data = JSON.parse(request.responseText);
-                var l = data.pop();
-                console.log(l);
+                var l = data[data.length - 1];
                 // Cribbed from https://stackoverflow.com/questions/542938/how-do-i-get-the-number-of-days-between-two-dates-in-javascript
                 var latest_day = new Date(l['year'], +l['month'] - 1, l['day']);
                 var today = new Date();
                 var days_diff = Math.floor((today-latest_day)/(1000*60*60*24));
 
+                // Some monthly numbers
+                var monthly_snow_count = snow.get_month_count(data, today);
+                var s = 's';
+                if ( monthly_snow_count === 1 ) s = '';
+                if ( monthly_snow_count < 11 ) monthly_snow_count = snow.ap_numerals[monthly_snow_count];
+                document.getElementById('month-snow-count').textContent = monthly_snow_count + ' time' + s;
                 // If the latest snow is today's or yesterday's we treat the sentence differently than if it was later.
                 if ( days_diff === 0 )
                 {
