@@ -334,7 +334,7 @@ var snow = {
                 }
                 else if ( snow_diff < 0 )
                 {
-                    drb.textContent = '🚨🚨 That’s a new record snow total for . 🚨🚨';
+                    drb.textContent = '🚨🚨 That’s a new record snow total for ' + that_days + '. 🚨🚨';
                 }
 
             }
@@ -426,7 +426,7 @@ var rando = function() {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    for ( var i=0; i < 8; i++ )
+    for ( var i=0; i < 9; i++ )
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
