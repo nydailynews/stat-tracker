@@ -76,14 +76,18 @@
     <!-- It's been a <span id='state-of-the-snow'></span> season. -->
     In the <span id='month-snow-count'></span> it has measurably snowed this month,
     <span id='current-month'></span> of snow fell, which is the <span id='month-ranking'></span> snow that's fallen in <span id='month1' class='title'></span> (of the <span id='months-with-snow'></span> <span id='month3' class='title'></span> months with measurable snowfall).
-    The last time it snowed this much in <span id='the-month-is'></span> was in <span id='the-year-was'></span>, when it snowed <span id='the-snow-was'></span>.
+    <span id='this-much' class=''>
+        The last time <span id='month5' class='the-month-is title'></span> it snowed more than this was the <span id='the-year-was'></span>, when <span id='the-snow-was'></span> of snow fell.
+    </span>
 </p>
 <p>
     The record for <span id='month2' class='title'></span> snowfall is <span id='month-record'></span>, set in <span id='month-record-set'></span> season.
+    <!--
     We’re <span id='inches-to-monthly-record'></span> inches short of that record.
+    -->
 </p>
 <p>
-    Among the years that it snowed in <span id='month4' class='title'></span>, an average <span id='month-average'></span> fell those months.
+    Among the years that it snowed in <span id='month4' class='the-month-is title'></span>, an average <span id='month-average'></span> fell those months.
 </p>
 <figure id='month-averages-chart'>
     <figcaption>This chart compares the current season's monthly snowfall against NYC's per-month averages.</figcaption>
@@ -216,7 +220,7 @@ var snow = {
 
         document.getElementById('month-ranking').textContent = this.month_ranking(this.month_str);
         document.getElementById('months-with-snow').textContent = this.monthly[this.month_str].length;
-        $('#month1, #month2, #month3, #month4').text(this.month_str);
+        $('#month1, #month2, #month3, #month4, #month5').text(this.month_str);
         document.getElementById('month-average').textContent = this.month_average(this.month_str) + ' inches';
         document.getElementById('month-record').textContent = this.record.monthly[this.month_str].total + ' inches';
         document.getElementById('month-record-set').textContent = 'the ' + this.record.monthly[this.month_str].year;
@@ -243,6 +247,21 @@ var snow = {
         if ( index === 0 ) return 'most';
         return this.to_ordinal(index) + '-most';
     },
+    get_last_year_it_snowed_x_amount: function(amount, month)
+    {
+        // Given a month and an amount of snow, figure out when the last time
+        // it snowed that much.
+        if ( typeof month === 'undefined' ) month = this.month_str;
+
+        var data = this.data;
+        // We don't want this year's data.
+        data.pop();
+        var l = data.length - 1;
+        for ( var i = l; i >= 0; i -- ) {
+            //console.log(amount, data[i]);
+            if ( +data[i][month] > amount ) return { amount: +data[i][month], season: data[i]['Season'] }
+        }
+    },
     get_month_count: function(data, day)
     {
         // Get the number of times it has snowed in a given month.
@@ -250,9 +269,10 @@ var snow = {
         var c = 0;
         var l = data.length;
         var m = day.getMonth() + 1;
-        var y = day.getYear();
+        var y = day.getFullYear();
         for ( var i = 0; i < l; i ++ )
         {
+           //console.log(day, data[i]['year'], y, data[i]['month'], m);
            if ( y === +data[i]['year'] && m === +data[i]['month'] ) c += 1;
         }
         return c;
@@ -443,6 +463,16 @@ var snow = {
             this.average.monthly.median[mon] = median;
         }
         if ( typeof month_chart !== 'undefined' ) month_chart();
+
+        if ( this.current[this.month_str] !== '' )
+        {
+            var last = this.get_last_year_it_snowed_x_amount(+this.current[this.month_str]);
+            var years = last['season'].split('-');
+            //if this.month_str
+            document.getElementById('the-year-was').textContent = 'the ' + last['season'] + ' season';
+            document.getElementById('the-snow-was').textContent = last['amount'] + ' ' + this.get_inches(last['amount']);
+        }
+        else document.getElementById('this-much').textContent = '';
     }
 };
 
@@ -730,54 +760,6 @@ legend.append('text')
 }   // Close function month_chart
 
 //}); // Close document.ready
-/*
-var c2 = {
-    'sheet': 'broncos-sacks-by-player-2016',
-    'chart': '#grouped-snow-monthly',
-    'x': 'Month',
-    'y': 'Inches',
-    'ceiling': 20
-};
-var sacks_player = {};
-
-var width2 = 420,
-    height2 = 300,
-    barHeight = 20;
-
-var x2 = d3.scale.linear()
-    .range([0, width2]);
-var y2 = d3.scale.linear()
-    .range([height2, 0]);
-
-var chart2 = d3.select(c2.chart)
-    .attr("width", width2);
-
-d3.json('output/' + c2.sheet + '.json', function(error, data) {
-  x2.domain([0, d3.max(data, function(d) { return +d[c2.x]; })]);
-  y2.domain([0, 5]);
-
-  chart2.attr("height", barHeight * data.length);
-
-  var bar = chart2.selectAll("g")
-      .data(data)
-    .enter().append("g")
-      .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
-
-  bar.append("rect")
-      .attr("width", function(d) { return x2(+d[c2.x]); })
-      .attr("height", barHeight - 1);
-
-  bar.append("text")
-      .attr("x", function(d) { return -5; })
-      .attr("y", barHeight / 2)
-      .style("fill", "white")
-      .style("text-anchor", "start")
-      .attr("dy", ".35em")
-      .attr("dx", ".8em")
-      .text(function(d) { return d[c2.y] + ', ' + d[c2.x]; });
-});
-
-*/
 
 </script>
     <p class="latest-news"><a target="_top" href="http://www.nydailynews.com/tags/nyc-weather">NYC WEATHER NEWS</a>: <strong id="latest-news-headline"></strong></p>
